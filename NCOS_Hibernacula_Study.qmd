@@ -523,7 +523,6 @@ p2 = ggplot(detections_by_habitat_species_pt_2,
   theme_minimal(base_family = "sans") +
   theme(
     plot.title = element_text(size = 14, face = "bold"),
-    axis.text.x = element_text(angle = 45, hjust = 1),
     panel.grid.major.x = element_blank()
   )
 
@@ -1351,7 +1350,7 @@ webshot(here("misc","species_table_pt1.html"), here("figures","species_table_pt1
 
 ```
     
-## Species List Combined
+## Species List with Hourly Presence Data (Parts 1 and 2 Combined)
 ```{r}
 #| label: tbl-species-list-hourly_pt_1_and_2
 #| tbl-cap: "Species List from Hourly Presence Data (Parts 1 and 2 Combined). Includes species-level wildlife identifications, sorted by class then total detections." 
@@ -1466,8 +1465,280 @@ t1_hourly <- species_final_hourly %>%
   add_header_above(c(" " = 1, "Constructed Hibernacula" = 3, "Boulders" = 3, "Logs" = 3, "Total" = 3))
 
 # Save as HTML and PNG
-save_kable(t1_hourly, here("misc","species_table_hourly.html"))
-webshot(here("misc","species_table_hourly.html"), here("figures", "species_table_hourly_pt_1_and_2.png"), zoom = 2, vwidth = 1800)
+save_kable(t1_hourly, here("misc","species_table_hourly_pt_1_and_2_combined.html"))
+webshot(here("misc","species_table_hourly_pt_1_and_2_combined.html"), here("figures", "species_table_hourly_pt_1_and_2_combined.png"), zoom = 2, vwidth = 1800)
+```
+## Species List with Hourly Presence Data (Parts 1 and 2 Separated)
 
+```{r}
+#| label: tbl-species-list-hourly_pt_1_and_2_separated
+#| tbl-cap: "Species List from Hourly Presence Data (Parts 1 and 2 Separated). Includes species-level wildlife identifications, sorted by class then total detections."
+
+# ---- Totals per feature_type x study_part ----
+total_features_hourly <- hourly_presence_pt_1_and_2 %>%
+  distinct(feature_type_methodology, placename, study_part) %>%
+  count(feature_type_methodology, study_part, name = "total_features_hourly")
+
+# camera effort per feature_type x study_part
+effort_by_ft_part <- feature_type_effort_summary_pt_1_and_2 %>%
+  group_by(feature_type_methodology, study_part) %>%
+  summarise(total_camera_days = sum(total_camera_days, na.rm = TRUE), .groups = "drop")
+
+# ---- Species summaries per feature_type x study_part ----
+species_summary_hourly <- hourly_presence_pt_1_and_2 %>%
+  group_by(common_name, feature_type_methodology, study_part) %>%
+  summarise(
+    count_observed   = sum(n, na.rm = TRUE),
+    features_visited = n_distinct(placename),
+    .groups = "drop"
+  )
+
+# ---- Pivot wide (keep study_part as an id col) ----
+species_counts_wide_hourly <- species_summary_hourly %>%
+  dplyr::select(common_name, study_part, feature_type_methodology, count_observed) %>%
+  pivot_wider(
+    id_cols   = c(common_name, study_part),
+    names_from  = feature_type_methodology,
+    values_from = count_observed,
+    values_fill = 0,
+    names_prefix = "count_observed_at_"
+  ) %>%
+  clean_names()
+
+species_features_wide_hourly <- species_summary_hourly %>%
+  dplyr::select(common_name, study_part, feature_type_methodology, features_visited) %>%
+  pivot_wider(
+    id_cols   = c(common_name, study_part),
+    names_from  = feature_type_methodology,
+    values_from = features_visited,
+    values_fill = 0,
+    names_prefix = "features_visited_at_"
+  ) %>%
+  clean_names()
+
+# ---- Pivot totals/effort wide so we can divide per-part ----
+total_features_wide <- total_features_hourly %>%
+  pivot_wider(
+    id_cols   = study_part,
+    names_from  = feature_type_methodology,
+    values_from = total_features_hourly,
+    names_prefix = "total_features_"
+  ) %>%
+  clean_names()
+
+effort_wide <- effort_by_ft_part %>%
+  pivot_wider(
+    id_cols   = study_part,
+    names_from  = feature_type_methodology,
+    values_from = total_camera_days,
+    values_fill = 0,
+    names_prefix = "cam_days_"
+  ) %>%
+  clean_names()
+
+# ---- Combine all, keyed by common_name + study_part ----
+species_combined_hourly <- species_counts_wide_hourly %>%
+  full_join(species_features_wide_hourly, by = c("common_name","study_part")) %>%
+  left_join(total_features_wide, by = "study_part") %>%
+  left_join(effort_wide, by = "study_part")
+
+# Helper: safely divide (avoid Inf/NaN when denom==0 or NA)
+safe_div <- function(num, den) ifelse(is.na(den) | den == 0, NA_real_, num / den)
+
+# ---- Compute per-feature % visited and rates (per-part) ----
+species_final_hourly <- species_combined_hourly %>%
+  mutate(
+    # Percent visited (×100)
+    percent_hibernacula_visited = 100 * safe_div(
+      features_visited_at_constructed_hibernacula, total_features_constructed_hibernacula
+    ),
+    percent_boulders_visited = 100 * safe_div(
+      features_visited_at_boulder, total_features_boulder
+    ),
+    percent_logs_visited = 100 * safe_div(
+      features_visited_at_log, total_features_log
+    ),
+
+    # Rates per cam-day
+    rate_per_cam_day_hibernacula = safe_div(
+      count_observed_at_constructed_hibernacula, cam_days_constructed_hibernacula
+    ),
+    rate_per_cam_day_boulder = safe_div(
+      count_observed_at_boulder, cam_days_boulder
+    ),
+    rate_per_cam_day_log = safe_div(
+      count_observed_at_log, cam_days_log
+    ),
+
+    # Totals across feature types (per part)
+    detections_total = rowSums(across(c(count_observed_at_constructed_hibernacula,
+                                        count_observed_at_boulder,
+                                        count_observed_at_log)), na.rm = TRUE),
+    total_features_all = rowSums(across(c(total_features_constructed_hibernacula,
+                                          total_features_boulder,
+                                          total_features_log)), na.rm = TRUE),
+    total_cam_days_all = rowSums(across(c(cam_days_constructed_hibernacula,
+                                          cam_days_boulder,
+                                          cam_days_log)), na.rm = TRUE),
+
+    percent_visited_all = 100 * safe_div(
+      rowSums(across(c(features_visited_at_constructed_hibernacula,
+                       features_visited_at_boulder,
+                       features_visited_at_log)), na.rm = TRUE),
+      total_features_all
+    ),
+    rate_per_cam_day_all = safe_div(detections_total, total_cam_days_all)
+  )
+
+# ---- Build wide table with Part headers (no Study Part column) ----
+# Start from species_final_hourly created above
+
+# 1) Keep just the display metrics
+metrics_long <- species_final_hourly %>%
+  transmute(
+    common_name, study_part,
+    # Constructed Hibernacula
+    detections_hib = count_observed_at_constructed_hibernacula,
+    pct_hib       = percent_hibernacula_visited,
+    rate_hib      = rate_per_cam_day_hibernacula,
+    # Boulders
+    detections_bld = count_observed_at_boulder,
+    pct_bld        = percent_boulders_visited,
+    rate_bld       = rate_per_cam_day_boulder,
+    # Logs
+    detections_log = count_observed_at_log,
+    pct_log        = percent_logs_visited,
+    rate_log       = rate_per_cam_day_log,
+    # Totals
+    detections_tot = detections_total,
+    pct_tot        = percent_visited_all,
+    rate_tot       = rate_per_cam_day_all
+  ) %>%
+  tidyr::pivot_longer(
+    cols = -c(common_name, study_part),
+    names_to = "metric",
+    values_to = "value"
+  )
+
+# 2) Go wide by study_part so columns repeat under Part 1 and Part 2
+metrics_wide <- metrics_long %>%
+  tidyr::pivot_wider(
+    id_cols = common_name,
+    names_from = c(study_part, metric),
+    values_from = value,
+    names_glue = "part_{study_part}__{metric}"
+  )
+
+# --- figure out which metrics actually exist per part ---
+present_feats <- metrics_long %>%
+  dplyr::group_by(study_part, metric) %>%
+  dplyr::summarise(all_na = all(is.na(value) | value == 0), .groups = "drop") %>%
+  dplyr::mutate(feature = sub("^(detections|pct|rate)_(.*)$", "\\2", metric)) %>%
+  dplyr::group_by(study_part, feature) %>%
+  dplyr::summarise(all_zero = all(all_na), .groups = "drop")
+
+# features to drop (all-zero across all metrics)
+drop_feats <- present_feats %>%
+  dplyr::filter(all_zero) %>%
+  dplyr::mutate(prefix = paste0("__", feature)) %>%
+  dplyr::pull(prefix)
+
+# filter col_order so we remove those
+col_order <- col_order[!vapply(drop_feats, function(df) grepl(df, col_order), logical(length(col_order)))]
+
+
+# 3) Order columns: Part 1 (Hib, Bld, Log, Total) then Part 2 (same order)
+col_order <- c(
+  # Part 1
+  "part_1__detections_hib","part_1__pct_hib","part_1__rate_hib",
+  # Part 2
+  "part_2__detections_hib","part_2__pct_hib","part_2__rate_hib",
+  "part_2__detections_bld","part_2__pct_bld","part_2__rate_bld",
+  "part_2__detections_log","part_2__pct_log","part_2__rate_log",
+  "part_2__detections_tot","part_2__pct_tot","part_2__rate_tot"
+)
+
+# some columns may be missing if a feature type is absent in a part; keep only those that exist
+col_order <- col_order[col_order %in% names(metrics_wide)]
+
+# for safety, no rename yet
+col_keep <- intersect(col_order, names(metrics_wide))
+
+# --- rebuild display_tbl with stable sort key (totals across parts) ---
+display_tbl <- metrics_wide %>%
+  dplyr::left_join(
+    dplyr::transmute(
+      metrics_wide,
+      common_name,
+      total_all = rowSums(dplyr::across(tidyselect::matches("^part_\\d+__detections_tot$")), na.rm = TRUE)
+    ),
+    by = "common_name"
+  ) %>%
+  dplyr::select(common_name, all_of(col_keep), total_all) %>%
+  dplyr::arrange(dplyr::desc(total_all), common_name) %>%
+  dplyr::select(-total_all) %>%
+  dplyr::mutate(
+    dplyr::across(tidyselect::matches("__pct_"),
+                  ~ ifelse(is.na(.x), NA, paste0(round(.x, 2), "%"))),
+    dplyr::across(tidyselect::matches("__rate_"), ~ round(.x, 3))
+  ) %>%
+  dplyr::rename(`Common Name` = common_name)
+
+# --- build leaf (bottom) labels to pass via kable(col.names=...) ---
+metric_label_map <- c(
+  detections_hib = "Hrs. Detected",  pct_hib = "% Visited",  rate_hib = "Per Cam.-Day",
+  detections_bld = "Hrs. Detected",  pct_bld = "% Visited",  rate_bld = "Per Cam.-Day",
+  detections_log = "Hrs. Detected",  pct_log = "% Visited",  rate_log = "Per Cam.-Day",
+  detections_tot = "Hrs. Detected",  pct_tot = "% Visited",  rate_tot = "Per Cam.-Day"
+)
+
+leaf_labels <- c(
+  "Common Name",
+  vapply(col_keep, function(x) {
+    key <- sub("^part_\\d+__", "", x)                 # e.g., "pct_hib"
+    lbl <- unname(metric_label_map[key])
+    if (is.na(lbl)) key else lbl
+  }, character(1))
+)
+
+# --- compute feature spans per part from the actual columns kept ---
+count_for <- function(part, suf)
+  sum(grepl(paste0("^part_", part, "__.*_", suf, "$"), col_keep))
+
+build_feature_spans <- function(part) {
+  out <- c()
+  n <- count_for(part, "hib"); if (n > 0) out <- c(out, "Constructed Hibernacula" = n)
+  n <- count_for(part, "bld"); if (n > 0) out <- c(out, "Boulders"               = n)
+  n <- count_for(part, "log"); if (n > 0) out <- c(out, "Logs"                    = n)
+  n <- count_for(part, "tot"); if (n > 0) out <- c(out, "Total"                   = n)
+  out
+}
+
+feature_header <- c(" " = 1, build_feature_spans(1), build_feature_spans(2))
+
+n_part1 <- sum(grepl("^part_1__", col_keep))
+n_part2 <- sum(grepl("^part_2__", col_keep))
+top_header <- c(" " = 1, if (n_part1 > 0) c("Part 1" = n_part1), if (n_part2 > 0) c("Part 2" = n_part2))
+
+# --- render: leaf labels via col.names; only TWO header rows above ---
+t1_hourly <- display_tbl %>%
+  kable(
+    caption = "Unique Hours Present and Percent Feature Visited by Feature Type (Hourly Presence)",
+    col.names = leaf_labels,
+    align = c("l", rep("c", ncol(display_tbl) - 1)),
+    digits = 3,
+    escape = FALSE
+  ) %>%
+  kable_styling(full_width = FALSE, position = "left",
+                bootstrap_options = c("striped", "hover", "condensed")) %>%
+  add_header_above(feature_header) %>%
+  add_header_above(top_header) |> 
+  column_spec((1 + n_part1), border_right = TRUE)
+
+# Save as HTML and PNG
+save_kable(t1_hourly, here("misc","species_table_hourly_pt_1_and_2_separated.html"))
+webshot(here("misc","species_table_hourly_pt_1_and_2_separated.html"),
+        here("figures","species_table_hourly_pt_1_and_2_separated2.png"),
+        zoom = 2, vwidth = 1800)
 ```
 
