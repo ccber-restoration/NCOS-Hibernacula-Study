@@ -106,9 +106,6 @@ Part 2 Data downloaded From Wildlife Insights:
 [NCOS Hibernacula Biodiversity Assessment](https://app.wildlifeinsights.org/manage/organizations/2002131/projects/2003592/summary?)
 
 ```{r}
-##load study part 1 data from February 2021
-clean_study_part_1_observations <- read_excel(here("data","originalMasterHibernaculaAnalysis.xlsx"), sheet = "Master.Data.Cleaned")
-
 ##load study part 2 data from April/May 2021
 raw_study_part_2_sequences_data = read_csv(here("data","sequences.csv"))
 raw_study_part_2_deployments_data = read_csv(here("data","deployments.csv"))
@@ -119,6 +116,10 @@ site_to_habitat_crosswalk <- read_csv(here("data", "site_to_habitat_crosswalk.cs
     trail = factor(trail, levels = c("no", "yes")),
     habitat_type = factor(habitat_type, levels = c("Marsh", "Grassland", "Scrub"))
   )
+
+
+##load study part 1 data from February 2021
+clean_study_part_1_observations <- read_excel(here("data","originalMasterHibernaculaAnalysis.xlsx"), sheet = "Master.Data.Cleaned")
 
 #load hibernacula_coordinates
 hibernacula_coordinates <- read_csv(here("data", "hibernacula_coordinates.csv")) |> 
@@ -405,7 +406,7 @@ hourly_presence_may <- clean_study_part_2_joined_sequences_and_deployments |>
   ) |>
   summarize(n = 1, .groups = "drop")
 
-## combining hourly presenve data from February and May
+## combining hourly presence data from February and May
 hourly_presence_all <- bind_rows(hourly_presence_february, hourly_presence_may)
 
 # Count unique species per hour, feature, and study period
@@ -740,7 +741,6 @@ species_palette <- setNames(
 ```
 
 ## Species by Habitat Type
-
 ```{r fig-species-by-habitat-type}
 #| label: fig-species-by-habitat-type
 #| fig-cap: "Species observed at hibernacula by habitat type, normalized by camera days."
@@ -815,7 +815,6 @@ ggplot(hourly_all_sites, aes(x = hour_am_pm, y = count, fill = common_name_lumpe
     legend.position = "right"
   )
 ```
-
 
 
 ```{r fig-hourly-by-species-combined}

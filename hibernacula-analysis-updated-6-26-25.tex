@@ -1,0 +1,1792 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  letterpaper,
+  DIV=11,
+  numbers=noendperiod]{scrartcl}
+
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else  
+    % xetex/luatex font selection
+    \setmainfont[]{Palatino}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\setcounter{secnumdepth}{5}
+% Make \paragraph and \subparagraph free-standing
+\makeatletter
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+\makeatother
+
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{241,243,245}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.40,0.45,0.13}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\BuiltInTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\ExtensionTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.28,0.35,0.67}{#1}}
+\newcommand{\ImportTok}[1]{\textcolor[rgb]{0.00,0.46,0.62}{#1}}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.07,0.07,0.07}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\KOMAoption{captions}{tableheading}
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Table of contents}
+\else
+  \newcommand\contentsname{Table of contents}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{List of Figures}
+\else
+  \newcommand\listfigurename{List of Figures}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{List of Tables}
+\else
+  \newcommand\listtablename{List of Tables}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{Figure}
+\else
+  \newcommand\figurename{Figure}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Table}
+\else
+  \newcommand\tablename{Table}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+
+\usepackage{bookmark}
+
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={NCOS Hibernacula Study},
+  pdfauthor={Garrett Craig},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+
+\title{NCOS Hibernacula Study}
+\author{Garrett Craig}
+\date{2025-07-18}
+
+\begin{document}
+\maketitle
+
+\renewcommand*\contentsname{Table of contents}
+{
+\hypersetup{linkcolor=}
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+
+\section{---}\label{section}
+
+\section{title: ``NCOS Hibernacula
+Study''}\label{title-ncos-hibernacula-study}
+
+\section{author: ``Garrett Craig''}\label{author-garrett-craig}
+
+\section{date: ``2025-07-18''}\label{date-2025-07-18}
+
+\section{format:}\label{format}
+
+\section{pdf:}\label{pdf}
+
+\section{toc: true}\label{toc-true}
+
+\section{toc-depth: 3}\label{toc-depth-3}
+
+\section{number-sections: true}\label{number-sections-true}
+
+\section{fig-width: 6}\label{fig-width-6}
+
+\section{fig-height: 4}\label{fig-height-4}
+
+\section{fig-cap-location: top}\label{fig-cap-location-top}
+
+\section{geometry: margin=1in}\label{geometry-margin1in}
+
+\section{keep-tex: true}\label{keep-tex-true}
+
+\section{execute:}\label{execute}
+
+\section{echo: false}\label{echo-false}
+
+\section{warning: false}\label{warning-false}
+
+\section{message: false}\label{message-false}
+
+\section{editor:}\label{editor}
+
+\section{markdown:}\label{markdown}
+
+\section{wrap: sentence}\label{wrap-sentence}
+
+\section{---}\label{section-1}
+
+\section{```\{r\}}\label{r}
+
+\section{\#\#yaml}\label{yaml}
+
+\section{Overview}\label{overview}
+
+This project is a continuation of earlier work (see
+\href{https://escholarship.org/uc/item/4qb9s50f}{here}) at the North
+Campus Open Space (NCOS) restoration project, where habitat features
+like large rocks, logs, and hibernacula (buried multi-rock refugia) were
+created to assess wildlife usage. This follow-up project, conducted in
+the spring of 2021, aims to assess not just the frequency of wildlife
+use of each feature type but also the ecological function that different
+habitat structures may play in restored landscapes.
+
+For this project, motion-sensor camera traps were installed at 5 boulder
+locations, 8 log locations, and 14 constructed hibernacula. Generally, 2
+camera traps were set at each location for 5 days (though there were a
+few exceptions to these standards). Images were then uploaded to
+Wildlife Insights and reviewed manually for the presence of wildlife in
+and around the habitat features. Reviewers categorized any wildlife
+present to the lowest possible taxonomic level and counted the number of
+each taxon present in the image sequence.
+
+\section{Data Processing}\label{data-processing}
+
+\subsection{Load data downloaded from Wildlife
+Insights}\label{load-data-downloaded-from-wildlife-insights}
+
+\href{https://app.wildlifeinsights.org/manage/organizations/2002131/projects/2003592/summary?}{NCOS
+Hibernacula Biodiversity Assessment}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sequences\_data\_raw }\OtherTok{=} \FunctionTok{read\_csv}\NormalTok{(}\FunctionTok{here}\NormalTok{(}\StringTok{"data"}\NormalTok{,}\StringTok{"sequences.csv"}\NormalTok{))}
+\NormalTok{deployments\_data\_raw}\OtherTok{=}\FunctionTok{read\_csv}\NormalTok{(}\FunctionTok{here}\NormalTok{(}\StringTok{"data"}\NormalTok{,}\StringTok{"deployments.csv"}\NormalTok{))}
+\NormalTok{cameras\_data\_raw}\OtherTok{=}\FunctionTok{read\_csv}\NormalTok{(}\FunctionTok{here}\NormalTok{(}\StringTok{"data"}\NormalTok{,}\StringTok{"cameras.csv"}\NormalTok{))}
+
+\DocumentationTok{\#\#load Alistair\textquotesingle{}s first study\textquotesingle{}s data from February 2021}
+\NormalTok{february\_study\_observations }\OtherTok{\textless{}{-}} \FunctionTok{read\_excel}\NormalTok{(}\FunctionTok{here}\NormalTok{(}\StringTok{"data"}\NormalTok{,}\StringTok{"originalMasterHibernaculaAnalysis.xlsx"}\NormalTok{), }\AttributeTok{sheet =} \StringTok{"Master.Data.Cleaned"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Clean and merge data
+files}\label{clean-and-merge-data-files}
+
+\subsubsection{Clean Data}\label{clean-data}
+
+Two deployments (L30C9 \& H8C11) were set as the incorrect feature type
+in Wildlife Insights, so I correct them here.
+
+At least a few deployments (H46C2, B2C9, H7C12, H35C6) stopped recording
+images before their listed end date, so I reset their end dates
+according to the date of their last recorded sequence. Others
+(e.g.~H2C12), may have also stopped short, though it's not entirely
+clear.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{deployments\_data\_raw}\SpecialCharTok{$}\NormalTok{feature\_type\_methodology[deployments\_data\_raw}\SpecialCharTok{$}\NormalTok{deployment\_id }\SpecialCharTok{==} \StringTok{"L30C9"}\NormalTok{] }\OtherTok{\textless{}{-}} \StringTok{"Log"}
+\NormalTok{deployments\_data\_raw}\SpecialCharTok{$}\NormalTok{feature\_type\_methodology[deployments\_data\_raw}\SpecialCharTok{$}\NormalTok{deployment\_id }\SpecialCharTok{==} \StringTok{"H8C11"}\NormalTok{] }\OtherTok{\textless{}{-}} \StringTok{"Constructed Hibernacula"}
+
+\NormalTok{sequences\_data\_clean }\OtherTok{\textless{}{-}}\NormalTok{ sequences\_data\_raw }\SpecialCharTok{|\textgreater{}} 
+\NormalTok{  dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(}\StringTok{"project\_id"}\NormalTok{, }\StringTok{"deployment\_id"}\NormalTok{, }\StringTok{"sequence\_id"}\NormalTok{, }\StringTok{"is\_blank"}\NormalTok{, }\StringTok{"identified\_by"}\NormalTok{, }\StringTok{"wi\_taxon\_id"}\NormalTok{, }
+         \StringTok{"class"}\NormalTok{, }\StringTok{"order"}\NormalTok{, }\StringTok{"family"}\NormalTok{, }\StringTok{"genus"}\NormalTok{, }\StringTok{"species"}\NormalTok{, }\StringTok{"common\_name"}\NormalTok{, }\StringTok{"start\_time"}\NormalTok{, }\StringTok{"end\_time"}\NormalTok{, }
+         \StringTok{"group\_size"}\NormalTok{, }\StringTok{"individual\_animal\_notes"}\NormalTok{, }\StringTok{"license"}\NormalTok{) }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{clean\_names}\NormalTok{() }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{start\_time =} \FunctionTok{ymd\_hms}\NormalTok{(start\_time),  }
+    \AttributeTok{end\_time =} \FunctionTok{ymd\_hms}\NormalTok{(end\_time),  }
+    \AttributeTok{sequence\_duration\_sec =} \FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{difftime}\NormalTok{(end\_time, start\_time, }\AttributeTok{units =} \StringTok{"secs"}\NormalTok{))  }\CommentTok{\# Sequence duration in seconds}
+\NormalTok{  )}
+
+\NormalTok{deployments\_data\_clean }\OtherTok{\textless{}{-}}\NormalTok{ deployments\_data\_raw }\SpecialCharTok{|\textgreater{}}  
+\NormalTok{   dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(}\StringTok{"deployment\_id"}\NormalTok{, }\StringTok{"placename"}\NormalTok{, }\StringTok{"longitude"}\NormalTok{, }\StringTok{"latitude"}\NormalTok{, }\StringTok{"start\_date"}\NormalTok{, }\StringTok{"end\_date"}\NormalTok{, }
+         \StringTok{"feature\_type\_methodology"}\NormalTok{, }\StringTok{"camera\_id"}\NormalTok{, }\StringTok{"camera\_name"}\NormalTok{, }\StringTok{"camera\_functioning"}\NormalTok{, }
+         \StringTok{"sensor\_height"}\NormalTok{, }\StringTok{"sensor\_orientation"}\NormalTok{, }\StringTok{"remarks"}\NormalTok{) }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{clean\_names}\NormalTok{() }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{end\_date =} \FunctionTok{case\_when}\NormalTok{(}
+\NormalTok{      deployment\_id }\SpecialCharTok{==} \StringTok{"H46C2"} \SpecialCharTok{\textasciitilde{}} \FunctionTok{as.Date}\NormalTok{(}\StringTok{"2021{-}05{-}02"}\NormalTok{),}
+\NormalTok{      deployment\_id }\SpecialCharTok{==} \StringTok{"B2C9"}  \SpecialCharTok{\textasciitilde{}} \FunctionTok{as.Date}\NormalTok{(}\StringTok{"2021{-}04{-}26"}\NormalTok{),}
+\NormalTok{      deployment\_id }\SpecialCharTok{==} \StringTok{"H7C12"} \SpecialCharTok{\textasciitilde{}} \FunctionTok{as.Date}\NormalTok{(}\StringTok{"2021{-}05{-}07"}\NormalTok{),}
+\NormalTok{      deployment\_id }\SpecialCharTok{==} \StringTok{"H35C6"} \SpecialCharTok{\textasciitilde{}} \FunctionTok{as.Date}\NormalTok{(}\StringTok{"2021{-}05{-}15"}\NormalTok{),}
+      \ConstantTok{TRUE} \SpecialCharTok{\textasciitilde{}} \FunctionTok{as.Date}\NormalTok{(end\_date)}
+\NormalTok{    ),}
+    \AttributeTok{start\_date =} \FunctionTok{as.Date}\NormalTok{(start\_date),}
+    \AttributeTok{deployment\_duration =} \FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{difftime}\NormalTok{(end\_date, start\_date, }\AttributeTok{units =} \StringTok{"days"}\NormalTok{))}
+\NormalTok{  )}
+
+\CommentTok{\# Read in the site{-}to{-}habitat crosswalk}
+\NormalTok{site\_to\_habitat }\OtherTok{\textless{}{-}} \FunctionTok{read\_csv}\NormalTok{(}\FunctionTok{here}\NormalTok{(}\StringTok{"data"}\NormalTok{, }\StringTok{"site\_to\_habitat\_crosswalk.csv"}\NormalTok{)) }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{trail =} \FunctionTok{factor}\NormalTok{(trail, }\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\StringTok{"no"}\NormalTok{, }\StringTok{"yes"}\NormalTok{)),}
+    \AttributeTok{habitat\_type =} \FunctionTok{factor}\NormalTok{(habitat\_type, }\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\StringTok{"Marsh"}\NormalTok{, }\StringTok{"Grassland"}\NormalTok{, }\StringTok{"Scrub"}\NormalTok{))}
+\NormalTok{  )}
+
+\CommentTok{\# Join site\_to\_habitat crosswalk with deployments\_data\_clean}
+\NormalTok{deployments\_data\_clean }\OtherTok{\textless{}{-}}\NormalTok{ deployments\_data\_clean }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{left\_join}\NormalTok{(site\_to\_habitat, }\AttributeTok{by =} \FunctionTok{c}\NormalTok{(}\StringTok{"placename"} \OtherTok{=} \StringTok{"site"}\NormalTok{))}
+
+
+\CommentTok{\# Merge sequences and deployments data}
+\NormalTok{merged\_sequences\_and\_deployment\_data }\OtherTok{\textless{}{-}}\NormalTok{ sequences\_data\_clean }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{full\_join}\NormalTok{(deployments\_data\_clean, }\AttributeTok{by =} \StringTok{"deployment\_id"}\NormalTok{) }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{filter}\NormalTok{(}
+\NormalTok{    class }\SpecialCharTok{!=} \StringTok{"No CV Result"}\NormalTok{,}
+    \FunctionTok{is.na}\NormalTok{(genus) }\SpecialCharTok{|}\NormalTok{ genus }\SpecialCharTok{!=} \StringTok{"Homo"}\NormalTok{,    }\CommentTok{\# Remove humans}
+\NormalTok{    class }\SpecialCharTok{!=} \StringTok{"Insecta"}\NormalTok{,                }\CommentTok{\# Remove insects}
+\NormalTok{    species }\SpecialCharTok{!=} \StringTok{"catus"}                 \CommentTok{\# Remove domestic cats}
+\NormalTok{  ) }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{genus\_species =} \FunctionTok{paste}\NormalTok{(genus, species, }\AttributeTok{sep =} \StringTok{" "}\NormalTok{),}
+    \AttributeTok{start\_time =} \FunctionTok{ymd\_hms}\NormalTok{(start\_time),}
+    \AttributeTok{start\_date =} \FunctionTok{as.Date}\NormalTok{(start\_date),}
+    \AttributeTok{end\_date =} \FunctionTok{as.Date}\NormalTok{(end\_date),}
+    \AttributeTok{feature\_type\_methodology =} \FunctionTok{as.factor}\NormalTok{(feature\_type\_methodology),}
+    \AttributeTok{obs\_start\_date =} \FunctionTok{as.Date}\NormalTok{(start\_time),}
+    \AttributeTok{obs\_start\_time =}\NormalTok{ hms}\SpecialCharTok{::}\FunctionTok{as\_hms}\NormalTok{(start\_time),}
+    \AttributeTok{study\_part =} \DecValTok{2}\NormalTok{, }\DocumentationTok{\#\# tags all of these sequences as part of the second part of the study}
+    \AttributeTok{feature\_type\_methodology\_recoded =} \FunctionTok{case\_when}\NormalTok{(}
+\NormalTok{      feature\_type\_methodology }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"Log"}\NormalTok{, }\StringTok{"Boulder"}\NormalTok{) }\SpecialCharTok{\textasciitilde{}} \StringTok{"Log/Boulder"}\NormalTok{,}
+      \ConstantTok{TRUE} \SpecialCharTok{\textasciitilde{}} \FunctionTok{as.character}\NormalTok{(feature\_type\_methodology)}
+\NormalTok{    ),}
+    \AttributeTok{feature\_type\_methodology\_recoded =} \FunctionTok{factor}\NormalTok{(}
+\NormalTok{      feature\_type\_methodology\_recoded,}
+      \AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\StringTok{"Constructed Hibernacula"}\NormalTok{, }\StringTok{"Log/Boulder"}\NormalTok{)}
+\NormalTok{    )}
+\NormalTok{  )}
+
+\FunctionTok{write.csv}\NormalTok{(merged\_sequences\_and\_deployment\_data,}\FunctionTok{here}\NormalTok{(}\StringTok{"data"}\NormalTok{,}\StringTok{"merged.csv"}\NormalTok{))}
+
+\DocumentationTok{\#\#clean February data}
+\NormalTok{february\_study\_observations }\OtherTok{\textless{}{-}}\NormalTok{ february\_study\_observations }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(common\_name)) }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{obs\_start\_time =}\NormalTok{ hms}\SpecialCharTok{::}\FunctionTok{as\_hms}\NormalTok{(obs\_start\_time),}
+    \AttributeTok{common\_name =}\NormalTok{ common\_name }\SpecialCharTok{|\textgreater{}}
+      \FunctionTok{str\_replace\_all}\NormalTok{(}\StringTok{"Racoon"}\NormalTok{, }\StringTok{"Raccoon"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+      \FunctionTok{str\_replace\_all}\NormalTok{(}\StringTok{"California Towee"}\NormalTok{, }\StringTok{"California Towhee"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+      \FunctionTok{str\_replace\_all}\NormalTok{(}\StringTok{"Says Phoebe"}\NormalTok{, }\StringTok{"Say\textquotesingle{}s Phoebe"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+      \FunctionTok{str\_replace\_all}\NormalTok{(}\StringTok{"Coopers Hawk"}\NormalTok{, }\StringTok{"Cooper\textquotesingle{}s Hawk"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+      \FunctionTok{str\_replace\_all}\NormalTok{(}\StringTok{"Hermit thrush"}\NormalTok{, }\StringTok{"Hermit Thrush"}\NormalTok{)}
+\NormalTok{  ) }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{left\_join}\NormalTok{(site\_to\_habitat, }\AttributeTok{by =} \FunctionTok{c}\NormalTok{(}\StringTok{"placename"} \OtherTok{=} \StringTok{"site"}\NormalTok{)) }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{deployment\_duration =} \DecValTok{5}\NormalTok{, }\DocumentationTok{\#\# ASSUMES ALL FEBRUARY DEPLOYMENTS WERE 5 DAYS LONG}
+    \AttributeTok{study\_part =} \DecValTok{1} \DocumentationTok{\#\# tags all of these sequences as part of the first part of the study}
+\NormalTok{  ) }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{group\_by}\NormalTok{(placename) }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{start\_date =} \FunctionTok{min}\NormalTok{(obs\_start\_date, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{),}
+    \AttributeTok{end\_date =} \FunctionTok{max}\NormalTok{(obs\_start\_date, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{),}
+    \AttributeTok{calculated\_deployment\_duration =} \FunctionTok{as.numeric}\NormalTok{(end\_date }\SpecialCharTok{{-}}\NormalTok{ start\_date), }\DocumentationTok{\#\#\# this shows that some sites may not have had 5 full days of trapping: H12, H13, H33, H48, H64 (4 days each); H25 (3 days), H21 2 (days)}
+  \AttributeTok{count\_of\_obs\_dates\_at\_place =} \FunctionTok{n\_distinct}\NormalTok{(obs\_start\_date)}
+\NormalTok{  ) }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{ungroup}\NormalTok{()}
+
+\NormalTok{february\_study\_observations }\OtherTok{\textless{}{-}}\NormalTok{ february\_study\_observations }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{row\_id =} \FunctionTok{row\_number}\NormalTok{())}
+
+\DocumentationTok{\#\# REMOVING OBSERVATIONS BY DIFFERENT CAMERAS AT THE SAME PLACE, DATE, AND MINUTE }
+
+\NormalTok{  february\_study\_observations }\OtherTok{\textless{}{-}}\NormalTok{ february\_study\_observations }\SpecialCharTok{|\textgreater{}} 
+    \FunctionTok{mutate}\NormalTok{(}
+      \AttributeTok{row\_id =} \FunctionTok{row\_number}\NormalTok{(),}
+      \AttributeTok{start\_time =} \FunctionTok{as.POSIXct}\NormalTok{(obs\_start\_date) }\SpecialCharTok{+} \FunctionTok{as.numeric}\NormalTok{(obs\_start\_time),}
+      \AttributeTok{truncated\_time =} \FunctionTok{floor\_date}\NormalTok{(start\_time, }\AttributeTok{unit =} \StringTok{"minute"}\NormalTok{),}
+      \AttributeTok{end\_time =}\NormalTok{ start\_time }\SpecialCharTok{+} \FunctionTok{seconds}\NormalTok{(}\DecValTok{60}\NormalTok{)  }\CommentTok{\# assume we want to remove duplicates within the minute}
+\NormalTok{    )}
+  \CommentTok{\# Self{-}join within group to find same{-}minute, same{-}species, different{-}camera overlaps}
+\NormalTok{  overlap\_pairs\_part\_1 }\OtherTok{\textless{}{-}}\NormalTok{ february\_study\_observations }\SpecialCharTok{|\textgreater{}} 
+    \FunctionTok{inner\_join}\NormalTok{(february\_study\_observations, }\AttributeTok{by =} \FunctionTok{c}\NormalTok{(}\StringTok{"placename"}\NormalTok{, }\StringTok{"obs\_start\_date"}\NormalTok{, }\StringTok{"truncated\_time"}\NormalTok{, }\StringTok{"common\_name"}\NormalTok{)) }\SpecialCharTok{|\textgreater{}} 
+    \FunctionTok{filter}\NormalTok{(}
+\NormalTok{      camera\_name.x }\SpecialCharTok{!=}\NormalTok{ camera\_name.y,}
+\NormalTok{      row\_id.x }\SpecialCharTok{!=}\NormalTok{ row\_id.y}
+\NormalTok{    ) }\SpecialCharTok{|\textgreater{}} 
+    \FunctionTok{distinct}\NormalTok{(row\_id.x, row\_id.y, }\AttributeTok{.keep\_all =} \ConstantTok{TRUE}\NormalTok{)}
+  
+\NormalTok{  rows\_to\_remove\_part\_1 }\OtherTok{\textless{}{-}}\NormalTok{ overlap\_pairs\_part\_1 }\SpecialCharTok{|\textgreater{}} 
+    \FunctionTok{mutate}\NormalTok{(}
+      \AttributeTok{keep\_x =} \FunctionTok{if\_else}\NormalTok{(group\_size.x }\SpecialCharTok{\textgreater{}}\NormalTok{ group\_size.y, }\ConstantTok{TRUE}\NormalTok{,}
+                \FunctionTok{if\_else}\NormalTok{(group\_size.x }\SpecialCharTok{\textless{}}\NormalTok{ group\_size.y, }\ConstantTok{FALSE}\NormalTok{,}
+\NormalTok{                  end\_time.x }\SpecialCharTok{\textgreater{}}\NormalTok{ end\_time.y))  }\CommentTok{\# later end\_time wins if tie}
+\NormalTok{    ) }\SpecialCharTok{|\textgreater{}} 
+    \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\NormalTok{keep\_x) }\SpecialCharTok{|\textgreater{}} 
+    \FunctionTok{pull}\NormalTok{(row\_id.x) }\SpecialCharTok{|\textgreater{}} 
+    \FunctionTok{unique}\NormalTok{()}
+  
+\NormalTok{  deduplicated\_february\_observations }\OtherTok{\textless{}{-}}\NormalTok{ february\_study\_observations }\SpecialCharTok{|\textgreater{}} 
+    \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\NormalTok{row\_id }\SpecialCharTok{\%in\%}\NormalTok{ rows\_to\_remove\_part\_1)}
+
+\DocumentationTok{\#\# analyze how long each February deployment lasted}
+\NormalTok{february\_placename\_summary }\OtherTok{=}\NormalTok{ february\_study\_observations }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{group\_by}\NormalTok{(placename,start\_date, end\_date,deployment\_duration,calculated\_deployment\_duration,count\_of\_obs\_dates\_at\_place) }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{summarize}\NormalTok{(}
+\NormalTok{  ) }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{ungroup}\NormalTok{()}
+
+
+\DocumentationTok{\#\#SUMMARIZE FEBRUARY OBSERVATIONS BY SPECIES PER HOUR PER PLACE}
+\NormalTok{february\_reduced\_to\_hourly }\OtherTok{\textless{}{-}}\NormalTok{ deduplicated\_february\_observations }\SpecialCharTok{|\textgreater{}}
+  \CommentTok{\# Create hour{-}block and date}
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{obs\_hour =} \FunctionTok{hour}\NormalTok{(obs\_start\_time),}
+    \AttributeTok{obs\_day =} \FunctionTok{as.Date}\NormalTok{(obs\_start\_date)}
+\NormalTok{  ) }\SpecialCharTok{|\textgreater{}} 
+  \CommentTok{\#Count unique species per hour block, day, and place}
+  \FunctionTok{group\_by}\NormalTok{(placename, obs\_day, obs\_hour, feature\_type\_methodology,common\_name,habitat\_type,trail,study\_part,start\_date,end\_date,deployment\_duration) }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{n =} \DecValTok{1}\NormalTok{, }\AttributeTok{.groups =} \StringTok{"drop"}\NormalTok{)  }\CommentTok{\# Forces 1 row per unique species in each hour/day block}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# This whole section removes overlapping sequences of the same species at the same place on the same date, but different cameras in the May data.}
+
+\CommentTok{\# Step 1: Add row\_id based on existing sequence\_id}
+\NormalTok{data\_intervals }\OtherTok{\textless{}{-}}\NormalTok{ merged\_sequences\_and\_deployment\_data }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{row\_id =}\NormalTok{ sequence\_id)}
+
+\CommentTok{\# Step 2: Self{-}join to find overlapping intervals (same species, place, date; different cameras)}
+\NormalTok{overlap\_pairs }\OtherTok{\textless{}{-}} \FunctionTok{interval\_inner\_join}\NormalTok{(}
+\NormalTok{  data\_intervals, data\_intervals,}
+  \AttributeTok{by =} \FunctionTok{c}\NormalTok{(}\StringTok{"start\_time"}\NormalTok{, }\StringTok{"end\_time"}\NormalTok{),}
+  \AttributeTok{maxgap =} \DecValTok{0}\NormalTok{,}
+  \AttributeTok{type =} \StringTok{"any"}
+\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}
+\NormalTok{    wi\_taxon\_id.x }\SpecialCharTok{==}\NormalTok{ wi\_taxon\_id.y,}
+\NormalTok{    placename.x }\SpecialCharTok{==}\NormalTok{ placename.y,}
+\NormalTok{    obs\_start\_date.x }\SpecialCharTok{==}\NormalTok{ obs\_start\_date.y,}
+\NormalTok{    camera\_name.x }\SpecialCharTok{!=}\NormalTok{ camera\_name.y,}
+\NormalTok{    row\_id.x }\SpecialCharTok{!=}\NormalTok{ row\_id.y}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{   dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(}
+\NormalTok{    wi\_taxon\_id.x, wi\_taxon\_id.y,}
+\NormalTok{    placename.x, placename.y,}
+\NormalTok{    obs\_start\_date.x, obs\_start\_date.y,}
+\NormalTok{    camera\_name.x, camera\_name.y,}
+\NormalTok{    row\_id.x, row\_id.y,}
+\NormalTok{    common\_name.x, common\_name.y,}
+\NormalTok{    group\_size.x, group\_size.y,}
+\NormalTok{    start\_time.x, start\_time.y,}
+\NormalTok{    end\_time.x, end\_time.y}
+\NormalTok{  )}
+
+\CommentTok{\# Step 3: Decide which rows to remove (keep higher group\_size; if tied, keep later end\_time)}
+\NormalTok{rows\_to\_remove }\OtherTok{\textless{}{-}}\NormalTok{ overlap\_pairs }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{keep\_x =} \FunctionTok{if\_else}\NormalTok{(group\_size.x }\SpecialCharTok{\textgreater{}}\NormalTok{ group\_size.y, }\ConstantTok{TRUE}\NormalTok{,}
+              \FunctionTok{if\_else}\NormalTok{(group\_size.x }\SpecialCharTok{\textless{}}\NormalTok{ group\_size.y, }\ConstantTok{FALSE}\NormalTok{,}
+\NormalTok{                end\_time.x }\SpecialCharTok{\textgreater{}}\NormalTok{ end\_time.y))  }\CommentTok{\# If tie, later end\_time wins}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\NormalTok{keep\_x) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{pull}\NormalTok{(row\_id.x) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{unique}\NormalTok{()}
+
+\CommentTok{\# Step 4: Remove the lower{-}priority overlaps}
+\NormalTok{merged\_data\_with\_deduplicated\_observations }\OtherTok{\textless{}{-}}\NormalTok{ merged\_sequences\_and\_deployment\_data }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\NormalTok{sequence\_id }\SpecialCharTok{\%in\%}\NormalTok{ rows\_to\_remove)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Working with February Study
+Data}\label{working-with-february-study-data}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# merged\_data\_with\_deduplicated\_observations \textless{}{-} merged\_data\_with\_deduplicated\_observations \%\textgreater{}\%}
+\CommentTok{\#   mutate(}
+\CommentTok{\#     feature\_type\_methodology\_recoded = case\_when(}
+\CommentTok{\#       feature\_type\_methodology \%in\% c("Log", "Boulder") \textasciitilde{} "Log/Boulder",}
+\CommentTok{\#       TRUE \textasciitilde{} feature\_type\_methodology}
+\CommentTok{\#     ),}
+\CommentTok{\#     feature\_type\_methodology\_recoded = factor(feature\_type\_methodology\_recoded,}
+\CommentTok{\#                                               levels = c("Constructed Hibernacula", "Log/Boulder"))}
+\CommentTok{\#   )}
+
+\NormalTok{daily\_site\_summary }\OtherTok{\textless{}{-}}\NormalTok{ merged\_data\_with\_deduplicated\_observations }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(}
+\NormalTok{    obs\_start\_date, placename, latitude, longitude,}
+\NormalTok{    feature\_type\_methodology, feature\_type\_methodology\_recoded,}
+\NormalTok{    habitat\_type, trail}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarize}\NormalTok{(}
+    \AttributeTok{daily\_total\_observations =} \FunctionTok{sum}\NormalTok{(group\_size, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{),}
+    \AttributeTok{.groups =} \StringTok{"drop"}
+\NormalTok{  ) }
+
+\CommentTok{\# Create daily rows for each deployment}
+\NormalTok{expanded\_deployments }\OtherTok{\textless{}{-}}\NormalTok{ deployments\_data\_clean }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{start\_date =} \FunctionTok{as.Date}\NormalTok{(start\_date),}
+         \AttributeTok{end\_date =} \FunctionTok{as.Date}\NormalTok{(end\_date)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{rowwise}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{obs\_start\_date =} \FunctionTok{list}\NormalTok{(}\FunctionTok{seq.Date}\NormalTok{(start\_date, end\_date, }\AttributeTok{by =} \StringTok{"day"}\NormalTok{))) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{unnest}\NormalTok{(}\AttributeTok{cols =} \FunctionTok{c}\NormalTok{(obs\_start\_date)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{ungroup}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(placename, obs\_start\_date)}
+
+\CommentTok{\# Create a daily summary of observations per site}
+\NormalTok{full\_daily\_data }\OtherTok{\textless{}{-}}\NormalTok{ expanded\_deployments }\SpecialCharTok{\%\textgreater{}\%}
+\FunctionTok{left\_join}\NormalTok{(daily\_site\_summary, }\AttributeTok{by =} \FunctionTok{c}\NormalTok{(}\StringTok{"placename"}\NormalTok{, }\StringTok{"obs\_start\_date"}\NormalTok{))}
+
+\CommentTok{\# Fill in missing values for latitude, longitude, feature\_type\_methodology, feature\_type\_methodology\_recoded, habitat\_type, and trail; set daily\_total\_observations to 0 if NA}
+\NormalTok{full\_daily\_data }\OtherTok{\textless{}{-}}\NormalTok{ full\_daily\_data }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{group\_by}\NormalTok{(placename) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{fill}\NormalTok{(latitude, longitude, feature\_type\_methodology,feature\_type\_methodology\_recoded, habitat\_type, trail, }\AttributeTok{.direction =} \StringTok{"downup"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{ungroup}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{mutate}\NormalTok{(}\AttributeTok{daily\_total\_observations =} \FunctionTok{ifelse}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(daily\_total\_observations), }\DecValTok{0}\NormalTok{, daily\_total\_observations))}
+
+\NormalTok{no\_data\_days }\OtherTok{\textless{}{-}}\NormalTok{ full\_daily\_data }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(daily\_total\_observations }\SpecialCharTok{==} \DecValTok{0}\NormalTok{) }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{drop\_na}\NormalTok{()}
+
+\CommentTok{\# Fill in missing dates for each site}
+\NormalTok{daily\_site\_summary }\OtherTok{\textless{}{-}} \FunctionTok{bind\_rows}\NormalTok{(daily\_site\_summary, no\_data\_days)}
+
+\NormalTok{site\_summary }\OtherTok{\textless{}{-}}\NormalTok{ daily\_site\_summary }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(}
+\NormalTok{    placename, latitude, longitude,}
+\NormalTok{    feature\_type\_methodology, feature\_type\_methodology\_recoded,}
+\NormalTok{    habitat\_type, trail}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarize}\NormalTok{(}
+    \AttributeTok{total\_observations =} \FunctionTok{sum}\NormalTok{(daily\_total\_observations, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{),}
+    \AttributeTok{total\_deployment\_days =} \FunctionTok{n}\NormalTok{(),  }\CommentTok{\# One row per day per site}
+    \AttributeTok{.groups =} \StringTok{"drop"}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{avg\_daily\_observations =}\NormalTok{ total\_observations }\SpecialCharTok{/}\NormalTok{ total\_deployment\_days}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\section{Statistical Analysis}\label{statistical-analysis}
+
+Since this analysis intended to analyze the effect on wildlife presence
+of constructed hibernacula relative to natural features like logs and
+boulders, we performed a two-category analysis comparing wildlife
+observations at constructed hibernacula against observations at all of
+the boulder/log sites combined.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Step 1: Compute summary stats}
+\NormalTok{summary\_stats }\OtherTok{\textless{}{-}}\NormalTok{ site\_summary }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(feature\_type\_methodology\_recoded) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarise}\NormalTok{(}
+    \AttributeTok{mean =} \FunctionTok{mean}\NormalTok{(avg\_daily\_observations),}
+    \AttributeTok{se =} \FunctionTok{sd}\NormalTok{(avg\_daily\_observations) }\SpecialCharTok{/} \FunctionTok{sqrt}\NormalTok{(}\FunctionTok{n}\NormalTok{()),}
+    \AttributeTok{n =} \FunctionTok{n}\NormalTok{(),}
+    \AttributeTok{.groups =} \StringTok{"drop"}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{lower =}\NormalTok{ mean }\SpecialCharTok{{-}} \FunctionTok{qt}\NormalTok{(}\FloatTok{0.975}\NormalTok{, }\AttributeTok{df =}\NormalTok{ n }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{) }\SpecialCharTok{*}\NormalTok{ se,}
+    \AttributeTok{upper =}\NormalTok{ mean }\SpecialCharTok{+} \FunctionTok{qt}\NormalTok{(}\FloatTok{0.975}\NormalTok{, }\AttributeTok{df =}\NormalTok{ n }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{) }\SpecialCharTok{*}\NormalTok{ se}
+\NormalTok{  )}
+
+\CommentTok{\# Step 2: Plot}
+\FunctionTok{ggplot}\NormalTok{(site\_summary, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ feature\_type\_methodology\_recoded, }\AttributeTok{y =}\NormalTok{ avg\_daily\_observations)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_jitter}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{color =}\NormalTok{ feature\_type\_methodology\_recoded), }\AttributeTok{width =} \FloatTok{0.25}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.6}\NormalTok{, }\AttributeTok{size =} \DecValTok{2}\NormalTok{, }\AttributeTok{show.legend =} \ConstantTok{FALSE}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_errorbar}\NormalTok{(}\AttributeTok{data =}\NormalTok{ summary\_stats, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{y =}\NormalTok{ mean, }\AttributeTok{ymin =}\NormalTok{ lower, }\AttributeTok{ymax =}\NormalTok{ upper),}
+                \AttributeTok{width =} \FloatTok{0.15}\NormalTok{, }\AttributeTok{color =} \StringTok{"black"}\NormalTok{, }\AttributeTok{linewidth =} \FloatTok{0.7}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data =}\NormalTok{ summary\_stats, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{y =}\NormalTok{ mean), }\AttributeTok{shape =} \DecValTok{23}\NormalTok{, }\AttributeTok{size =} \DecValTok{4}\NormalTok{,}
+             \AttributeTok{fill =} \StringTok{"black"}\NormalTok{, }\AttributeTok{color =} \StringTok{"black"}\NormalTok{, }\AttributeTok{stroke =} \FloatTok{1.2}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_color\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"Log/Boulder"} \OtherTok{=} \StringTok{"\#2992a5"}\NormalTok{, }\StringTok{"Constructed Hibernacula"} \OtherTok{=} \StringTok{"\#fc8d62"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Avg. Daily Observations per Camera Trap Site by Feature Type"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Feature Type"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Avg. Daily Observations"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{axis.text.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{vjust =} \DecValTok{1}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{hibernacula-analysis-updated-6-26-25_files/figure-pdf/fig-daily-obs-mean-ci-1.png}}
+
+}
+
+\caption{\label{fig-daily-obs-mean-ci}Average daily observations per
+camera trap site across different feature types. Points represent
+individual sites, black diamonds indicate mean values, and vertical
+lines show 95\% confidence intervals.}
+
+\end{figure}%
+
+\subsection{T-Test}\label{t-test}
+
+A t-test is used here for exploratory purposes to compare mean wildlife
+visitation rates between two groups---constructed hibernacula and the
+combined natural feature control (logs and boulders). It's not the
+primary analysis, but it provides a quick check for differences in
+means.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Perform the t{-}test}
+\NormalTok{t\_test\_result }\OtherTok{\textless{}{-}} \FunctionTok{t.test}\NormalTok{(daily\_total\_observations }\SpecialCharTok{\textasciitilde{}}\NormalTok{ feature\_type\_methodology\_recoded, }\AttributeTok{data =}\NormalTok{ daily\_site\_summary)}
+
+\CommentTok{\# Extract key components from the t{-}test result}
+\NormalTok{t\_test\_df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{Statistic =} \FunctionTok{c}\NormalTok{(}\StringTok{"p{-}value"}\NormalTok{, }\StringTok{"Confidence Interval (Lower)"}\NormalTok{, }\StringTok{"Confidence Interval (Upper)"}\NormalTok{, }
+                \StringTok{"Mean (Constructed Hibernacula)"}\NormalTok{, }\StringTok{"Mean (Log/Boulder)"}\NormalTok{),}
+  \AttributeTok{Value =} \FunctionTok{c}\NormalTok{(}
+    \FunctionTok{round}\NormalTok{(t\_test\_result}\SpecialCharTok{$}\NormalTok{p.value, }\DecValTok{5}\NormalTok{),}
+    \FunctionTok{round}\NormalTok{(t\_test\_result}\SpecialCharTok{$}\NormalTok{conf.int[}\DecValTok{1}\NormalTok{], }\DecValTok{4}\NormalTok{),}
+    \FunctionTok{round}\NormalTok{(t\_test\_result}\SpecialCharTok{$}\NormalTok{conf.int[}\DecValTok{2}\NormalTok{], }\DecValTok{4}\NormalTok{),}
+    \FunctionTok{round}\NormalTok{(t\_test\_result}\SpecialCharTok{$}\NormalTok{estimate[}\DecValTok{1}\NormalTok{], }\DecValTok{4}\NormalTok{),}
+    \FunctionTok{round}\NormalTok{(t\_test\_result}\SpecialCharTok{$}\NormalTok{estimate[}\DecValTok{2}\NormalTok{], }\DecValTok{4}\NormalTok{)}
+\NormalTok{  )}
+\NormalTok{)}
+
+\CommentTok{\# Print the formatted table}
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(t\_test\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lr@{}}
+
+\caption{\label{tbl-t-test-results}Welch two sample T-test comparing
+average daily observations between feature types}
+
+\tabularnewline
+
+\toprule\noalign{}
+Statistic & Value \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+p-value & 0.00788 \\
+Confidence Interval (Lower) & 1.62180 \\
+Confidence Interval (Upper) & 10.51530 \\
+Mean (Constructed Hibernacula) & 12.73120 \\
+Mean (Log/Boulder) & 6.66270 \\
+
+\end{longtable}
+
+\subsubsection{Calculate Cohen's d}\label{calculate-cohens-d}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Calculate Cohen\textquotesingle{}s d}
+\NormalTok{cohen\_d\_result }\OtherTok{\textless{}{-}} \FunctionTok{cohen.d}\NormalTok{(avg\_daily\_observations }\SpecialCharTok{\textasciitilde{}}\NormalTok{ feature\_type\_methodology\_recoded, }\AttributeTok{data =}\NormalTok{ site\_summary)}
+
+\CommentTok{\# Extract key components from the Cohen\textquotesingle{}s d result}
+\NormalTok{cohen\_d\_df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{Statistic =} \FunctionTok{c}\NormalTok{(}\StringTok{"Cohen\textquotesingle{}s d"}\NormalTok{, }\StringTok{"Effect Size Magnitude"}\NormalTok{, }\StringTok{"Confidence Interval (Lower)"}\NormalTok{, }\StringTok{"Confidence Interval (Upper)"}\NormalTok{),}
+  \AttributeTok{Value =} \FunctionTok{c}\NormalTok{(}
+    \FunctionTok{round}\NormalTok{(cohen\_d\_result}\SpecialCharTok{$}\NormalTok{estimate, }\DecValTok{4}\NormalTok{),}
+\NormalTok{    cohen\_d\_result}\SpecialCharTok{$}\NormalTok{magnitude,}
+    \FunctionTok{round}\NormalTok{(cohen\_d\_result}\SpecialCharTok{$}\NormalTok{conf.int[}\DecValTok{1}\NormalTok{], }\DecValTok{4}\NormalTok{),}
+    \FunctionTok{round}\NormalTok{(cohen\_d\_result}\SpecialCharTok{$}\NormalTok{conf.int[}\DecValTok{2}\NormalTok{], }\DecValTok{4}\NormalTok{)}
+\NormalTok{  )}
+\NormalTok{)}
+
+\CommentTok{\# Print the formatted table}
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(cohen\_d\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lr@{}}
+
+\caption{\label{tbl-cohen-d-results}Cohen's d - effect size for average
+daily observations between feature types}
+
+\tabularnewline
+
+\toprule\noalign{}
+Statistic & Value \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Cohen's d & 0.6751 \\
+Effect Size Magnitude & 3.0000 \\
+Confidence Interval (Lower) & -0.1404 \\
+Confidence Interval (Upper) & 1.4906 \\
+
+\end{longtable}
+
+\subsubsection{T-Test Assumption
+Testing}\label{t-test-assumption-testing}
+
+\paragraph{Shapiro-Wilk Test for
+Normality}\label{shapiro-wilk-test-for-normality}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Perform the Shapiro{-}Wilk normality test}
+\NormalTok{normality\_test }\OtherTok{\textless{}{-}}\NormalTok{ site\_summary }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(feature\_type\_methodology\_recoded) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{shapiro\_result =} \FunctionTok{list}\NormalTok{(}\FunctionTok{shapiro.test}\NormalTok{(avg\_daily\_observations))) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{shapiro\_p\_value =} \FunctionTok{sapply}\NormalTok{(shapiro\_result, }\ControlFlowTok{function}\NormalTok{(x) x}\SpecialCharTok{$}\NormalTok{p.value)) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{   dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(feature\_type\_methodology\_recoded, shapiro\_p\_value)}
+
+\CommentTok{\# Print the formatted table}
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(normality\_test)}
+\CommentTok{\# OLD NOTES FOR P{-}VALUES FROM WHEN I USED DEPLOYMENT SUMMARY}
+\CommentTok{\# Constructed Hibernacula: p{-}value = 0.0006307}
+\CommentTok{\# }
+\CommentTok{\# The p{-}value is less than 0.05, so we reject the null hypothesis that the data is normally distributed.}
+\CommentTok{\# Therefore, the data for Constructed Hibernacula is not normally distributed.}
+\CommentTok{\# }
+\CommentTok{\# Log/Boulder: p{-}value = 0.0685879}
+\CommentTok{\# }
+\CommentTok{\# The p{-}value is greater than 0.05, suggesting that the data for Log/Boulder is not significantly different from normal.}
+\CommentTok{\# We do not reject the null hypothesis, so it appears Log/Boulder data may follow a normal distribution.}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lr@{}}
+
+\caption{\label{tbl-normality-test-results}Shapiro-Wilk normality test
+for average daily observations by feature type}
+
+\tabularnewline
+
+\toprule\noalign{}
+feature\_type\_methodology\_recoded & shapiro\_p\_value \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Constructed Hibernacula & 0.0356278 \\
+Log/Boulder & 0.4442690 \\
+
+\end{longtable}
+
+The p-values are greater than 0.05, so we do not reject the null
+hypothesis that the data is normally distributed for Log/Boulder sites
+nor for hibernacula.
+
+\paragraph{Levene's Test for Homogeneity of
+Variances}\label{levenes-test-for-homogeneity-of-variances}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Perform the Levene\textquotesingle{}s test}
+\NormalTok{levene\_test }\OtherTok{\textless{}{-}} \FunctionTok{leveneTest}\NormalTok{(avg\_daily\_observations }\SpecialCharTok{\textasciitilde{}}\NormalTok{ feature\_type\_methodology\_recoded, }\AttributeTok{data =}\NormalTok{ site\_summary)}
+
+\CommentTok{\# Extract key components from the Levene\textquotesingle{}s test result}
+\NormalTok{levene\_test\_df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{Statistic =} \FunctionTok{c}\NormalTok{(}\StringTok{"Df (Group)"}\NormalTok{, }\StringTok{"Df (Residual)"}\NormalTok{, }\StringTok{"F value"}\NormalTok{, }\StringTok{"p{-}value"}\NormalTok{),}
+  \AttributeTok{Value =} \FunctionTok{c}\NormalTok{(}
+\NormalTok{    levene\_test}\SpecialCharTok{$}\NormalTok{Df[}\DecValTok{1}\NormalTok{],}
+\NormalTok{    levene\_test}\SpecialCharTok{$}\NormalTok{Df[}\DecValTok{2}\NormalTok{],}
+    \FunctionTok{round}\NormalTok{(levene\_test}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{F value}\StringTok{\textasciigrave{}}\NormalTok{[}\DecValTok{1}\NormalTok{], }\DecValTok{4}\NormalTok{),}
+    \FunctionTok{round}\NormalTok{(levene\_test}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{Pr(\textgreater{}F)}\StringTok{\textasciigrave{}}\NormalTok{[}\DecValTok{1}\NormalTok{], }\DecValTok{5}\NormalTok{)}
+\NormalTok{  )}
+\NormalTok{)}
+
+\CommentTok{\# Print the formatted table}
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(levene\_test\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lr@{}}
+
+\caption{\label{tbl-levene-test-results}Levene's Test for Homogeneity of
+Variance for Average Daily Observations by Feature Type}
+
+\tabularnewline
+
+\toprule\noalign{}
+Statistic & Value \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Df (Group) & 1.00000 \\
+Df (Residual) & 25.00000 \\
+F value & 8.39310 \\
+p-value & 0.00772 \\
+
+\end{longtable}
+
+Variances between the two groups are not equal (i.e., there is
+heteroscedasticity, or unequal variances).
+
+Even given unequal variances, the Welch Two Sample t-test is still
+appropriate because it does not assume equal variances and is robust to
+non-normality when sample sizes are not too small.
+
+\subsection{Linear Regression}\label{linear-regression}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lm\_model\_1 }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(daily\_total\_observations }\SpecialCharTok{\textasciitilde{}}\NormalTok{ feature\_type\_methodology\_recoded,}
+               \AttributeTok{data =}\NormalTok{ daily\_site\_summary)}
+
+\NormalTok{lm\_model\_2 }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(daily\_total\_observations }\SpecialCharTok{\textasciitilde{}}\NormalTok{ feature\_type\_methodology\_recoded }\SpecialCharTok{+}\NormalTok{ trail,}
+               \AttributeTok{data =}\NormalTok{ daily\_site\_summary)}
+
+\NormalTok{lm\_model\_3 }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(daily\_total\_observations }\SpecialCharTok{\textasciitilde{}}\NormalTok{ feature\_type\_methodology\_recoded }\SpecialCharTok{+}\NormalTok{ trail }\SpecialCharTok{+}\NormalTok{ habitat\_type,}
+               \AttributeTok{data =}\NormalTok{ daily\_site\_summary)}
+
+\FunctionTok{stargazer}\NormalTok{(lm\_model\_1, lm\_model\_2, lm\_model\_3,}
+          \AttributeTok{type =} \StringTok{"text"}\NormalTok{,}
+          \AttributeTok{title =} \StringTok{"Comparison of Linear Models"}\NormalTok{,}
+          \AttributeTok{dep.var.labels =} \StringTok{"Daily Total Observations"}\NormalTok{,}
+          \AttributeTok{column.labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"Model 1"}\NormalTok{, }\StringTok{"Model 2"}\NormalTok{, }\StringTok{"Model 3"}\NormalTok{),}
+          \AttributeTok{covariate.labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"Feature Type {-} Boulder/Log)"}\NormalTok{, }\StringTok{"Trail {-} Yes"}\NormalTok{, }\StringTok{"Habitat Type {-} Grassland"}\NormalTok{, }\StringTok{"Habitat Type {-} Scrub"}\NormalTok{),}
+          \AttributeTok{digits =} \DecValTok{3}\NormalTok{,}
+          \AttributeTok{notes =} \StringTok{"Ref: Hibernacula, No Trail, Marsh"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+
+Comparison of Linear Models
+===============================================================================================
+                                                    Dependent variable:                        
+                            -------------------------------------------------------------------
+                                                 Daily Total Observations                      
+                                   Model 1               Model 2                Model 3        
+                                     (1)                   (2)                    (3)          
+-----------------------------------------------------------------------------------------------
+Feature Type - Boulder/Log)       -6.069**              -8.579***              -8.988***       
+                                   (2.341)               (2.629)                (2.604)        
+                                                                                               
+Trail - Yes                                              -6.670**               -8.987**       
+                                                         (3.289)                (3.665)        
+                                                                                               
+Habitat Type - Grassland                                                        7.679**        
+                                                                                (3.225)        
+                                                                                               
+Habitat Type - Scrub                                                             3.470         
+                                                                                (2.680)        
+                                                                                               
+Constant                          12.731***             15.241***              12.952***       
+                                   (1.607)               (2.017)                (2.374)        
+                                                                                               
+-----------------------------------------------------------------------------------------------
+Observations                         176                   176                    176          
+R2                                  0.037                 0.060                  0.092         
+Adjusted R2                         0.032                 0.049                  0.071         
+Residual Std. Error           15.501 (df = 174)     15.364 (df = 173)      15.185 (df = 171)   
+F Statistic                 6.722** (df = 1; 174) 5.478*** (df = 2; 173) 4.329*** (df = 4; 171)
+===============================================================================================
+Note:                                                               *p<0.1; **p<0.05; ***p<0.01
+                                                              Ref: Hibernacula, No Trail, Marsh
+\end{verbatim}
+
+\textbf{Model 1:} Including only the feature type: Sites with
+Boulder/Log features have \textasciitilde6.1 fewer daily observations
+compared to the reference feature type. This effect is statistically
+significant at p \textless{} 0.01.
+
+\textbf{Model 2:} Adds Trail (Yes/No): Boulder/Log effect remains
+significant and grows stronger (\textasciitilde8.6 fewer observations).
+The presence of a Trail reduces observations by \textasciitilde6.7, and
+this effect is statistically significant.
+
+\textbf{Model 3:} Adds Habitat Type (with Marsh as the reference):
+Boulder/Log still shows a strong, significant negative effect
+(\textasciitilde9.0 fewer observations). Trail effect becomes slightly
+stronger (\textasciitilde9.0 fewer observations) and is still
+significant. Grassland habitat appears to increase observations by
+\textasciitilde7.7, and Scrub by \textasciitilde3.5, but only
+grassland's effect is statistically significant.
+
+\textbf{Model Fit (R²):} Very low R² across models
+(\textasciitilde3--10\%), meaning the linear model explains only a small
+portion of the variance in daily observations.
+
+\subsection{Poisson and Quasipoisson
+GLM}\label{poisson-and-quasipoisson-glm}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{poisson\_model\_1 }\OtherTok{\textless{}{-}} \FunctionTok{glm}\NormalTok{(daily\_total\_observations }\SpecialCharTok{\textasciitilde{}}\NormalTok{ feature\_type\_methodology\_recoded,}
+                   \AttributeTok{data =}\NormalTok{ daily\_site\_summary,}
+                   \AttributeTok{family =} \FunctionTok{poisson}\NormalTok{())}
+\NormalTok{poisson\_model\_2 }\OtherTok{\textless{}{-}} \FunctionTok{glm}\NormalTok{(daily\_total\_observations }\SpecialCharTok{\textasciitilde{}}\NormalTok{ feature\_type\_methodology\_recoded }\SpecialCharTok{+}\NormalTok{ trail,}
+                   \AttributeTok{data =}\NormalTok{ daily\_site\_summary,}
+                   \AttributeTok{family =} \FunctionTok{poisson}\NormalTok{())}
+\NormalTok{poisson\_model\_3 }\OtherTok{\textless{}{-}} \FunctionTok{glm}\NormalTok{(daily\_total\_observations }\SpecialCharTok{\textasciitilde{}}\NormalTok{ feature\_type\_methodology\_recoded }\SpecialCharTok{+}\NormalTok{ trail }\SpecialCharTok{+}\NormalTok{ habitat\_type,}
+                   \AttributeTok{data =}\NormalTok{ daily\_site\_summary,}
+                   \AttributeTok{family =} \FunctionTok{poisson}\NormalTok{())}
+
+\FunctionTok{stargazer}\NormalTok{(poisson\_model\_1, poisson\_model\_2, poisson\_model\_3,}
+          \AttributeTok{type =} \StringTok{"text"}\NormalTok{,}
+          \AttributeTok{title =} \StringTok{"Comparison of Poisson GLMs"}\NormalTok{,}
+          \AttributeTok{dep.var.labels =} \StringTok{"Daily Total Observations"}\NormalTok{,}
+          \AttributeTok{column.labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"Model 1"}\NormalTok{, }\StringTok{"Model 2"}\NormalTok{, }\StringTok{"Model 3"}\NormalTok{),}
+          \AttributeTok{covariate.labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"Feature Type {-} Boulder/Log"}\NormalTok{, }\StringTok{"Trail {-} Yes"}\NormalTok{, }\StringTok{"Habitat Type {-} Grassland"}\NormalTok{, }\StringTok{"Habitat Type {-} Scrub"}\NormalTok{,}\StringTok{"Baseline"}\NormalTok{),}
+          \AttributeTok{digits =} \DecValTok{3}\NormalTok{,}
+          \AttributeTok{notes =} \StringTok{"Reference levels: Constructed Hibernacula (Feature Type), No (Trail), Marsh (Habitat Type)."}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+
+Comparison of Poisson GLMs
+========================================================================================================================
+                                                                Dependent variable:                                     
+                           ---------------------------------------------------------------------------------------------
+                                                             Daily Total Observations                                   
+                                       Model 1                        Model 2                        Model 3            
+                                         (1)                            (2)                            (3)              
+------------------------------------------------------------------------------------------------------------------------
+Feature Type - Boulder/Log            -0.648***                      -0.827***                      -0.873***           
+                                       (0.052)                        (0.054)                        (0.054)            
+                                                                                                                        
+Trail - Yes                                                          -0.576***                      -0.832***           
+                                                                      (0.067)                        (0.077)            
+                                                                                                                        
+Habitat Type - Grassland                                                                             0.791***           
+                                                                                                     (0.066)            
+                                                                                                                        
+Habitat Type - Scrub                                                                                 0.394***           
+                                                                                                     (0.058)            
+                                                                                                                        
+Baseline                              2.544***                        2.724***                       2.437***           
+                                       (0.029)                        (0.034)                        (0.048)            
+                                                                                                                        
+------------------------------------------------------------------------------------------------------------------------
+Observations                             176                            176                            176              
+Log Likelihood                       -1,677.997                      -1,637.599                     -1,564.257          
+Akaike Inf. Crit.                     3,359.994                      3,281.197                      3,138.514           
+========================================================================================================================
+Note:                                                                                        *p<0.1; **p<0.05; ***p<0.01
+                             Reference levels: Constructed Hibernacula (Feature Type), No (Trail), Marsh (Habitat Type).
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{dispersion\_ratio\_1 }\OtherTok{\textless{}{-}} \FunctionTok{summary}\NormalTok{(poisson\_model\_1)}\SpecialCharTok{$}\NormalTok{deviance }\SpecialCharTok{/} \FunctionTok{summary}\NormalTok{(poisson\_model\_1)}\SpecialCharTok{$}\NormalTok{df.residual}
+\NormalTok{dispersion\_ratio\_2 }\OtherTok{\textless{}{-}} \FunctionTok{summary}\NormalTok{(poisson\_model\_2)}\SpecialCharTok{$}\NormalTok{deviance }\SpecialCharTok{/} \FunctionTok{summary}\NormalTok{(poisson\_model\_2)}\SpecialCharTok{$}\NormalTok{df.residual}
+\NormalTok{dispersion\_ratio\_3 }\OtherTok{\textless{}{-}} \FunctionTok{summary}\NormalTok{(poisson\_model\_3)}\SpecialCharTok{$}\NormalTok{deviance }\SpecialCharTok{/} \FunctionTok{summary}\NormalTok{(poisson\_model\_3)}\SpecialCharTok{$}\NormalTok{df.residual}
+
+\ControlFlowTok{if}\NormalTok{ (dispersion\_ratio\_1 }\SpecialCharTok{\textgreater{}} \DecValTok{1}\NormalTok{) \{}
+  \FunctionTok{cat}\NormalTok{(}\StringTok{"Poisson GLM 1\textquotesingle{}s dispersion ratio indicates overdispersion:"}\NormalTok{, dispersion\_ratio\_1, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{\} }\ControlFlowTok{else}\NormalTok{ \{}
+  \FunctionTok{cat}\NormalTok{(}\StringTok{"Poisson GLM 1\textquotesingle{}s dispersion ratio is acceptable:"}\NormalTok{, dispersion\_ratio\_1, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Poisson GLM 1's dispersion ratio indicates overdispersion: 16.36991 
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ControlFlowTok{if}\NormalTok{ (dispersion\_ratio\_2 }\SpecialCharTok{\textgreater{}} \DecValTok{1}\NormalTok{) \{}
+  \FunctionTok{cat}\NormalTok{(}\StringTok{"Poisson GLM 2\textquotesingle{}s dispersion ratio indicates overdispersion:"}\NormalTok{, dispersion\_ratio\_2, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{\} }\ControlFlowTok{else}\NormalTok{ \{}
+  \FunctionTok{cat}\NormalTok{(}\StringTok{"Poisson GLM 2\textquotesingle{}s dispersion ratio is acceptable:"}\NormalTok{, dispersion\_ratio\_2, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Poisson GLM 2's dispersion ratio indicates overdispersion: 15.9975 
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ControlFlowTok{if}\NormalTok{ (dispersion\_ratio\_3 }\SpecialCharTok{\textgreater{}} \DecValTok{1}\NormalTok{) \{}
+  \FunctionTok{cat}\NormalTok{(}\StringTok{"Poisson GLM 3\textquotesingle{}s dispersion ratio indicates overdispersion:"}\NormalTok{, dispersion\_ratio\_3, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{\} }\ControlFlowTok{else}\NormalTok{ \{}
+  \FunctionTok{cat}\NormalTok{(}\StringTok{"Poisson GLM 3\textquotesingle{}s dispersion ratio is acceptable:"}\NormalTok{, dispersion\_ratio\_3, }\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Poisson GLM 3's dispersion ratio indicates overdispersion: 15.3268 
+\end{verbatim}
+
+These Poisson models are more appropriate for count data like daily
+observations. The coefficients are on the log scale, so interpretation
+requires exponentiation.
+
+\textbf{Model 1:} Boulder/Log sites have a log count decrease of 0.648,
+or about 48\% fewer expected daily observations (exp(-0.648) ≈ 0.523).
+Highly significant (p \textless{} 0.01).
+
+\textbf{Model 2:} Adding Trail: Trail presence decreases expected counts
+by about 44\% (exp(-0.576) ≈ 0.562), significant at p \textless{} 0.01.
+Boulder/Log effect becomes stronger: 56\% decrease (exp(-0.827) ≈ 0.437)
+and remains highly significant.
+
+\textbf{Model 3:} Adding Habitat Type: Grassland: +121\% increase
+(exp(0.791) ≈ 2.206), highly significant. Scrub: +48\% increase
+(exp(0.394) ≈ 1.483), highly significant. Trail effect strengthens to
+56\% decrease (exp(-0.832) ≈ 0.435), highly significant. Boulder/Log
+effect remains strong at 58\% decrease (exp(-0.873) ≈ 0.418), highly
+significant.
+
+\textbf{Model Fit:} Log-likelihood improves substantially across models
+(less negative = better fit). AIC decreases markedly across models
+(lower = better), with Model 3 showing the best fit.
+
+\textbf{BUT:} Overdispersion is present in all Poisson models
+(dispersion ratios \textasciitilde15.3-16.4), which violates Poisson
+assumptions and may lead to underestimated standard errors. Consider
+using negative binomial regression or quasi-Poisson models to account
+for overdispersion.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{quasi\_model\_1 }\OtherTok{\textless{}{-}} \FunctionTok{glm}\NormalTok{(daily\_total\_observations }\SpecialCharTok{\textasciitilde{}}\NormalTok{ feature\_type\_methodology\_recoded,}
+                   \AttributeTok{data =}\NormalTok{ daily\_site\_summary,}
+                   \AttributeTok{family =} \FunctionTok{quasipoisson}\NormalTok{())}
+\NormalTok{quasi\_model\_2 }\OtherTok{\textless{}{-}} \FunctionTok{glm}\NormalTok{(daily\_total\_observations }\SpecialCharTok{\textasciitilde{}}\NormalTok{ feature\_type\_methodology\_recoded }\SpecialCharTok{+}\NormalTok{ trail,}
+                   \AttributeTok{data =}\NormalTok{ daily\_site\_summary,}
+                   \AttributeTok{family =} \FunctionTok{quasipoisson}\NormalTok{())}
+\NormalTok{quasi\_model\_3 }\OtherTok{\textless{}{-}} \FunctionTok{glm}\NormalTok{(daily\_total\_observations }\SpecialCharTok{\textasciitilde{}}\NormalTok{ feature\_type\_methodology\_recoded }\SpecialCharTok{+}\NormalTok{ trail }\SpecialCharTok{+}\NormalTok{ habitat\_type,}
+                   \AttributeTok{data =}\NormalTok{ daily\_site\_summary,}
+                   \AttributeTok{family =} \FunctionTok{quasipoisson}\NormalTok{())}
+
+\FunctionTok{stargazer}\NormalTok{(quasi\_model\_1, quasi\_model\_2, quasi\_model\_3,}
+          \AttributeTok{type =} \StringTok{"text"}\NormalTok{,}
+          \AttributeTok{title =} \StringTok{"Comparison of Quasi{-}Poisson GLMs"}\NormalTok{,}
+          \AttributeTok{dep.var.labels =} \StringTok{"Daily Total Observations"}\NormalTok{,}
+          \AttributeTok{column.labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"Model 1"}\NormalTok{, }\StringTok{"Model 2"}\NormalTok{, }\StringTok{"Model 3"}\NormalTok{),}
+          \AttributeTok{covariate.labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"Feature Type {-} Boulder/Log"}\NormalTok{, }\StringTok{"Trail {-} Yes"}\NormalTok{, }\StringTok{"Habitat Type {-} Grassland"}\NormalTok{, }\StringTok{"Habitat Type {-} Scrub"}\NormalTok{,}\StringTok{"Baseline"}\NormalTok{),}
+          \AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+
+Comparison of Quasi-Poisson GLMs
+========================================================
+                                Dependent variable:     
+                           -----------------------------
+                             Daily Total Observations   
+                            Model 1   Model 2   Model 3 
+                              (1)       (2)       (3)   
+--------------------------------------------------------
+Feature Type - Boulder/Log -0.648*** -0.827*** -0.873***
+                            (0.236)   (0.259)   (0.247) 
+                                                        
+Trail - Yes                           -0.576*  -0.832** 
+                                      (0.320)   (0.348) 
+                                                        
+Habitat Type - Grassland                       0.791*** 
+                                                (0.302) 
+                                                        
+Habitat Type - Scrub                             0.394  
+                                                (0.265) 
+                                                        
+Baseline                   2.544***  2.724***  2.437*** 
+                            (0.133)   (0.161)   (0.218) 
+                                                        
+--------------------------------------------------------
+Observations                  176       176       176   
+========================================================
+Note:                        *p<0.1; **p<0.05; ***p<0.01
+\end{verbatim}
+
+These Quasi-Poisson models correct for overdispersion by adjusting
+standard errors (coefficients remain the same as Poisson models, but
+standard errors are inflated to account for overdispersion).
+
+\textbf{Model 1:} Boulder/Log sites have a log count decrease of 0.648,
+or about 48\% fewer expected daily observations (exp(-0.648) ≈ 0.523).
+Remains highly significant (p \textless{} 0.01) even with corrected
+standard errors.
+
+\textbf{Model 2:} Adding Trail: Trail presence decreases expected counts
+by about 44\% (exp(-0.576) ≈ 0.562), but now only marginally significant
+(p \textless{} 0.1) due to inflated standard errors. Boulder/Log effect
+remains strong: 56\% decrease (exp(-0.827) ≈ 0.437) and highly
+significant (p \textless{} 0.01).
+
+\textbf{Model 3:} Adding Habitat Type: Grassland: +121\% increase
+(exp(0.791) ≈ 2.206), highly significant (p \textless{} 0.01). Scrub:
++48\% increase (exp(0.394) ≈ 1.483), but now non-significant due to
+larger standard errors. Trail effect strengthens to 56\% decrease
+(exp(-0.832) ≈ 0.435), significant at p \textless{} 0.05. Boulder/Log
+effect remains strong at 58\% decrease (exp(-0.873) ≈ 0.418), highly
+significant (p \textless{} 0.01).
+
+\subsection{Results}\label{results}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Welch t{-}test results}
+\NormalTok{p\_value\_text }\OtherTok{\textless{}{-}} \FunctionTok{round}\NormalTok{(t\_test\_result}\SpecialCharTok{$}\NormalTok{p.value, }\DecValTok{5}\NormalTok{)}
+\NormalTok{mean\_hibernacula }\OtherTok{\textless{}{-}} \FunctionTok{round}\NormalTok{(t\_test\_result}\SpecialCharTok{$}\NormalTok{estimate[}\DecValTok{1}\NormalTok{], }\DecValTok{2}\NormalTok{)}
+\NormalTok{mean\_log\_boulder }\OtherTok{\textless{}{-}} \FunctionTok{round}\NormalTok{(t\_test\_result}\SpecialCharTok{$}\NormalTok{estimate[}\DecValTok{2}\NormalTok{], }\DecValTok{2}\NormalTok{)}
+\NormalTok{mean\_difference }\OtherTok{\textless{}{-}} \FunctionTok{round}\NormalTok{(}\FunctionTok{diff}\NormalTok{(t\_test\_result}\SpecialCharTok{$}\NormalTok{estimate), }\DecValTok{2}\NormalTok{)}
+\NormalTok{ci\_lower }\OtherTok{\textless{}{-}} \FunctionTok{round}\NormalTok{(t\_test\_result}\SpecialCharTok{$}\NormalTok{conf.int[}\DecValTok{1}\NormalTok{], }\DecValTok{2}\NormalTok{)}
+\NormalTok{ci\_upper }\OtherTok{\textless{}{-}} \FunctionTok{round}\NormalTok{(t\_test\_result}\SpecialCharTok{$}\NormalTok{conf.int[}\DecValTok{2}\NormalTok{], }\DecValTok{2}\NormalTok{)}
+
+\CommentTok{\# Cohen\textquotesingle{}s d}
+\NormalTok{cohen\_d\_value }\OtherTok{\textless{}{-}} \FunctionTok{round}\NormalTok{(cohen\_d\_result}\SpecialCharTok{$}\NormalTok{estimate, }\DecValTok{2}\NormalTok{)}
+\NormalTok{cohen\_d\_magnitude }\OtherTok{\textless{}{-}}\NormalTok{ cohen\_d\_result}\SpecialCharTok{$}\NormalTok{magnitude}
+\NormalTok{cohen\_d\_ci\_lower }\OtherTok{\textless{}{-}} \FunctionTok{round}\NormalTok{(cohen\_d\_result}\SpecialCharTok{$}\NormalTok{conf.int[}\DecValTok{1}\NormalTok{], }\DecValTok{2}\NormalTok{)}
+\NormalTok{cohen\_d\_ci\_upper }\OtherTok{\textless{}{-}} \FunctionTok{round}\NormalTok{(cohen\_d\_result}\SpecialCharTok{$}\NormalTok{conf.int[}\DecValTok{2}\NormalTok{], }\DecValTok{2}\NormalTok{)}
+
+\CommentTok{\# Shapiro{-}Wilk normality}
+\NormalTok{shapiro\_p\_hibernacula }\OtherTok{\textless{}{-}} \FunctionTok{round}\NormalTok{(normality\_test}\SpecialCharTok{$}\NormalTok{shapiro\_p\_value[normality\_test}\SpecialCharTok{$}\NormalTok{feature\_type\_methodology\_recoded }\SpecialCharTok{==} \StringTok{"Constructed Hibernacula"}\NormalTok{], }\DecValTok{4}\NormalTok{)}
+\NormalTok{shapiro\_p\_log\_boulder }\OtherTok{\textless{}{-}} \FunctionTok{round}\NormalTok{(normality\_test}\SpecialCharTok{$}\NormalTok{shapiro\_p\_value[normality\_test}\SpecialCharTok{$}\NormalTok{feature\_type\_methodology\_recoded }\SpecialCharTok{==} \StringTok{"Log/Boulder"}\NormalTok{], }\DecValTok{4}\NormalTok{)}
+
+\CommentTok{\# Levene’s test}
+\NormalTok{levene\_f\_value }\OtherTok{\textless{}{-}} \FunctionTok{round}\NormalTok{(levene\_test}\SpecialCharTok{$}\StringTok{"F value"}\NormalTok{[}\DecValTok{1}\NormalTok{], }\DecValTok{2}\NormalTok{)}
+\NormalTok{levene\_p\_value }\OtherTok{\textless{}{-}} \FunctionTok{round}\NormalTok{(levene\_test}\SpecialCharTok{$}\StringTok{"Pr(\textgreater{}F)"}\NormalTok{[}\DecValTok{1}\NormalTok{], }\DecValTok{4}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\paragraph{Summary of Results}\label{summary-of-results}
+
+Across all models, Boulder/Log features consistently and significantly
+reduce daily observations relative to Constructed Hibernacula,
+suggesting the latter are associated with higher activity or detection.
+
+Trail proximity and Habitat Type effects appear meaningful in the
+Poisson models. And the Poisson models fit the data better than linear
+models, but overdispersion must be addressed. Quasi-Poisson corrects for
+this with corrected standard errors, and the Quasi-Poisson Model 3 that
+includes all three variables (feature type, trail proximity, and habitat
+type) shows significance (p \textless{} 0.05) for all variables except
+for Scrub habitat type, which is no longer significant due to larger
+standard errors.
+
+\section{Data Visualization}\label{data-visualization}
+
+\subsection{Taxonomic Class Observations by Feature
+Type}\label{taxonomic-class-observations-by-feature-type}
+
+\subsection{Number of Species Observed per Feature
+Type}\label{number-of-species-observed-per-feature-type}
+
+\subsection{Avg. Daily Observations per Camera Trap
+Site}\label{avg.-daily-observations-per-camera-trap-site}
+
+\subsection{Hourly Breakdown by Feature
+Type}\label{hourly-breakdown-by-feature-type}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Convert hour to 12{-}hour format with AM/PM}
+\NormalTok{merged\_data\_with\_deduplicated\_observations}\SpecialCharTok{$}\NormalTok{hour\_am\_pm }\OtherTok{\textless{}{-}} \FunctionTok{format}\NormalTok{(merged\_data\_with\_deduplicated\_observations}\SpecialCharTok{$}\NormalTok{start\_time, }\StringTok{"\%I \%p"}\NormalTok{)}
+
+\CommentTok{\# Summarize data to get raw counts for each site per hour}
+\NormalTok{hourly\_deployment\_summary }\OtherTok{\textless{}{-}}\NormalTok{ merged\_data\_with\_deduplicated\_observations }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(}
+\NormalTok{    placename,}
+\NormalTok{    camera\_name,}
+\NormalTok{    hour\_am\_pm,}
+\NormalTok{    deployment\_duration,}
+\NormalTok{    feature\_type\_methodology}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarize}\NormalTok{(}
+    \AttributeTok{observations =} \FunctionTok{sum}\NormalTok{(group\_size, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{),}
+    \AttributeTok{.groups =} \StringTok{"drop"}
+\NormalTok{  )}
+
+\NormalTok{camera\_effort\_by\_feature }\OtherTok{\textless{}{-}}\NormalTok{ merged\_data\_with\_deduplicated\_observations }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{distinct}\NormalTok{(deployment\_id, feature\_type\_methodology, deployment\_duration) }\SpecialCharTok{\%\textgreater{}\%}  \CommentTok{\# one row per deployment}
+  \FunctionTok{group\_by}\NormalTok{(feature\_type\_methodology) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarize}\NormalTok{(}
+    \AttributeTok{camera\_days =} \FunctionTok{sum}\NormalTok{(deployment\_duration, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{),}
+    \AttributeTok{total\_camera\_hours =}\NormalTok{ camera\_days }\SpecialCharTok{*} \DecValTok{24}\NormalTok{,}
+    \AttributeTok{.groups =} \StringTok{"drop"}
+\NormalTok{  )}
+
+\NormalTok{hourly\_summary }\OtherTok{\textless{}{-}}\NormalTok{ hourly\_deployment\_summary }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(hour\_am\_pm, feature\_type\_methodology) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarize}\NormalTok{(}\AttributeTok{total\_observations =} \FunctionTok{sum}\NormalTok{(observations, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{),}
+            \AttributeTok{.groups =} \StringTok{"drop"}\NormalTok{)}
+
+\NormalTok{hourly\_summary\_with\_effort }\OtherTok{\textless{}{-}}\NormalTok{ hourly\_summary }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{left\_join}\NormalTok{(camera\_effort\_by\_feature, }\AttributeTok{by =} \StringTok{"feature\_type\_methodology"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{avg\_observations\_in\_hour\_block =}\NormalTok{ total\_observations }\SpecialCharTok{/}\NormalTok{ camera\_days)}
+
+\CommentTok{\# \# Summarize data to get raw counts for each feature type per hour}
+\CommentTok{\# hourly\_summary \textless{}{-} merged\_data\_with\_deduplicated\_observations \%\textgreater{}\%}
+\CommentTok{\#   group\_by(hour\_am\_pm, feature\_type\_methodology) \%\textgreater{}\%}
+\CommentTok{\#   summarize(count = n(), .groups = "drop")  \# Get raw count}
+
+\CommentTok{\# Correct ordering of hours from "12 AM" to "11 PM"}
+\NormalTok{hourly\_summary\_with\_effort}\SpecialCharTok{$}\NormalTok{hour\_am\_pm }\OtherTok{\textless{}{-}} \FunctionTok{factor}\NormalTok{(hourly\_summary}\SpecialCharTok{$}\NormalTok{hour\_am\_pm, }
+                                    \AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\StringTok{"12 AM"}\NormalTok{, }\FunctionTok{sprintf}\NormalTok{(}\StringTok{"\%02d AM"}\NormalTok{, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{11}\NormalTok{), }
+                                               \StringTok{"12 PM"}\NormalTok{, }\FunctionTok{sprintf}\NormalTok{(}\StringTok{"\%02d PM"}\NormalTok{, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{11}\NormalTok{)))}
+
+\CommentTok{\# Plot raw counts}
+\FunctionTok{ggplot}\NormalTok{(hourly\_summary\_with\_effort, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ hour\_am\_pm, }\AttributeTok{y =}\NormalTok{ avg\_observations\_in\_hour\_block , }\AttributeTok{fill =}\NormalTok{ feature\_type\_methodology)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{, }\AttributeTok{position =} \StringTok{"dodge"}\NormalTok{) }\SpecialCharTok{+}  \CommentTok{\# Stacked bars for raw counts}
+  \FunctionTok{scale\_fill\_brewer}\NormalTok{(}\AttributeTok{palette =} \StringTok{"Set2"}\NormalTok{) }\SpecialCharTok{+}  \CommentTok{\# Distinct colors}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Diel Wildlife Observations by Feature Type"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Hour of Day"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Observations per Camera Hour"}\NormalTok{,}
+    \AttributeTok{fill =} \StringTok{"Feature Type"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}
+    \AttributeTok{axis.text.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{angle =} \DecValTok{90}\NormalTok{, }\AttributeTok{hjust =} \DecValTok{1}\NormalTok{),  }\CommentTok{\# Tilt x{-}axis labels for better readability}
+    \AttributeTok{legend.position =} \StringTok{"right"}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{hibernacula-analysis-updated-6-26-25_files/figure-pdf/fig-hourly-activity-1.png}}
+
+}
+
+\caption{\label{fig-hourly-activity}Temporal distribution of wildlife
+observations throughout the day by feature type. This visualization
+demonstrates potential differences in when animals use each feature
+type. Each bar represents the total number of animals observed at a
+given feature type divided by the total number of camera days at each
+feature type.}
+
+\end{figure}%
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Species Lumping}
+\CommentTok{\#| include: false}
+\CommentTok{\# Set detection threshold}
+\NormalTok{detection\_threshold }\OtherTok{\textless{}{-}} \DecValTok{50}
+
+\CommentTok{\# Count total observations by species}
+\NormalTok{species\_counts }\OtherTok{\textless{}{-}}\NormalTok{ merged\_data\_with\_deduplicated\_observations }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(common\_name)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{count}\NormalTok{(common\_name, }\AttributeTok{name =} \StringTok{"total\_count"}\NormalTok{)}
+
+\CommentTok{\# Recode species names based on detection threshold or name content}
+\NormalTok{merged\_data\_lumped }\OtherTok{\textless{}{-}}\NormalTok{ merged\_data\_with\_deduplicated\_observations }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{left\_join}\NormalTok{(species\_counts, }\AttributeTok{by =} \StringTok{"common\_name"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{common\_name\_lumped =} \FunctionTok{case\_when}\NormalTok{(}
+\NormalTok{      total\_count }\SpecialCharTok{\textless{}}\NormalTok{ detection\_threshold }\SpecialCharTok{\&} \SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(class) }\SpecialCharTok{\textasciitilde{}} \FunctionTok{paste0}\NormalTok{(}\StringTok{"Other ("}\NormalTok{, class, }\StringTok{")"}\NormalTok{),}
+      \FunctionTok{grepl}\NormalTok{(}\StringTok{"other|unidentified"}\NormalTok{, }\FunctionTok{tolower}\NormalTok{(common\_name)) }\SpecialCharTok{\&} \SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(class) }\SpecialCharTok{\textasciitilde{}} \FunctionTok{paste0}\NormalTok{(}\StringTok{"Other ("}\NormalTok{, class, }\StringTok{")"}\NormalTok{),}
+      \ConstantTok{TRUE} \SpecialCharTok{\textasciitilde{}}\NormalTok{ common\_name}
+\NormalTok{    )}
+\NormalTok{  )}
+
+\CommentTok{\# Build species palette}
+\NormalTok{lumped\_species }\OtherTok{\textless{}{-}}\NormalTok{ merged\_data\_lumped }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(common\_name\_lumped)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{distinct}\NormalTok{(common\_name\_lumped) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{arrange}\NormalTok{(common\_name\_lumped) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{pull}\NormalTok{(common\_name\_lumped)}
+
+\NormalTok{species\_palette }\OtherTok{\textless{}{-}} \FunctionTok{setNames}\NormalTok{(}
+  \FunctionTok{colorRampPalette}\NormalTok{(RColorBrewer}\SpecialCharTok{::}\FunctionTok{brewer.pal}\NormalTok{(}\DecValTok{8}\NormalTok{, }\StringTok{"Set3"}\NormalTok{))(}\FunctionTok{length}\NormalTok{(lumped\_species)),}
+\NormalTok{  lumped\_species}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Species by Habitat Type}\label{species-by-habitat-type}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Prepare data for plot: exclude NA habitat, calculate normalized obs/hour}
+\NormalTok{species\_by\_habitat }\OtherTok{\textless{}{-}}\NormalTok{ merged\_data\_lumped }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(habitat\_type), }\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(common\_name)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(habitat\_type, common\_name\_lumped, deployment\_id) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarise}\NormalTok{(}
+    \AttributeTok{observations =} \FunctionTok{n}\NormalTok{(),}
+    \AttributeTok{deployment\_duration\_days =}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{first}\NormalTok{(deployment\_duration),}
+    \AttributeTok{.groups =} \StringTok{"drop"}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{observations\_per\_camera\_day =}\NormalTok{ observations }\SpecialCharTok{/}\NormalTok{ (deployment\_duration\_days)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(habitat\_type, common\_name\_lumped) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{observations\_per\_camera\_day =} \FunctionTok{sum}\NormalTok{(observations\_per\_camera\_day), }\AttributeTok{.groups =} \StringTok{"drop"}\NormalTok{)}
+
+
+\CommentTok{\# Plot stacked bar chart}
+\FunctionTok{ggplot}\NormalTok{(species\_by\_habitat, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ habitat\_type, }\AttributeTok{y =}\NormalTok{ observations\_per\_camera\_day, }\AttributeTok{fill =}\NormalTok{ common\_name\_lumped)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =}\NormalTok{ species\_palette, }\AttributeTok{name =} \StringTok{"Species"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Species Observed at Hibernacula by Habitat Type"}\NormalTok{,}
+    \AttributeTok{x =} \ConstantTok{NULL}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Observations per Camera Trap Day"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{(}\AttributeTok{base\_size =} \DecValTok{12}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}
+    \AttributeTok{legend.position =} \StringTok{"right"}\NormalTok{,}
+    \AttributeTok{axis.text.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{size =} \DecValTok{12}\NormalTok{)}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{hibernacula-analysis-updated-6-26-25_files/figure-pdf/fig-species-by-habitat-type-1.png}}
+
+}
+
+\caption{\label{fig-species-by-habitat-type}Species observed at
+hibernacula by habitat type, normalized by camera days.}
+
+\end{figure}%
+
+\subsection{Hourly Breakdown by Common
+Name}\label{hourly-breakdown-by-common-name}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Prepare and aggregate all data by hour and species}
+\NormalTok{hourly\_all\_sites }\OtherTok{\textless{}{-}}\NormalTok{ merged\_data\_lumped }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(common\_name)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{hour\_am\_pm =} \FunctionTok{format}\NormalTok{(start\_time, }\StringTok{"\%I \%p"}\NormalTok{),}
+    \AttributeTok{hour\_am\_pm =} \FunctionTok{factor}\NormalTok{(hour\_am\_pm, }\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\StringTok{"12 AM"}\NormalTok{, }\FunctionTok{sprintf}\NormalTok{(}\StringTok{"\%02d AM"}\NormalTok{, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{11}\NormalTok{), }
+                                               \StringTok{"12 PM"}\NormalTok{, }\FunctionTok{sprintf}\NormalTok{(}\StringTok{"\%02d PM"}\NormalTok{, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{11}\NormalTok{)))}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(hour\_am\_pm, common\_name\_lumped) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{count =} \FunctionTok{n}\NormalTok{(), }\AttributeTok{.groups =} \StringTok{"drop"}\NormalTok{)}
+
+\CommentTok{\# Plot aggregated hourly counts across all habitats}
+\FunctionTok{ggplot}\NormalTok{(hourly\_all\_sites, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ hour\_am\_pm, }\AttributeTok{y =}\NormalTok{ count, }\AttributeTok{fill =}\NormalTok{ common\_name\_lumped)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{, }\AttributeTok{position =} \StringTok{"stack"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =}\NormalTok{ species\_palette, }\AttributeTok{name =} \StringTok{"Species"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Hourly Wildlife Observations Across All Habitat Features"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Hour of Day (AM/PM)"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Observation Count"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}
+    \AttributeTok{axis.text.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{angle =} \DecValTok{45}\NormalTok{, }\AttributeTok{hjust =} \DecValTok{1}\NormalTok{),}
+    \AttributeTok{legend.position =} \StringTok{"right"}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{hibernacula-analysis-updated-6-26-25_files/figure-pdf/fig-hourly-all-sites-by-species-1.png}}
+
+}
+
+\caption{\label{fig-hourly-all-sites-by-species}Hourly wildlife
+observations across all habitat features, stacked by species. This view
+highlights daily activity patterns regardless of feature type.}
+
+\end{figure}%
+
+\subsection{Hourly Breakdown per Feature
+Type}\label{hourly-breakdown-per-feature-type}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(patchwork)}
+
+\CommentTok{\# Define all hour levels and species}
+\NormalTok{hour\_levels }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"12 AM"}\NormalTok{, }\FunctionTok{sprintf}\NormalTok{(}\StringTok{"\%02d AM"}\NormalTok{, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{11}\NormalTok{), }\StringTok{"12 PM"}\NormalTok{, }\FunctionTok{sprintf}\NormalTok{(}\StringTok{"\%02d PM"}\NormalTok{, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{11}\NormalTok{))}
+\NormalTok{species\_levels }\OtherTok{\textless{}{-}}\NormalTok{ lumped\_species}
+
+\CommentTok{\# Helper to pad missing combinations}
+\NormalTok{pad\_hourly }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(df, feature\_type) \{}
+\NormalTok{  df }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{filter}\NormalTok{(feature\_type\_methodology }\SpecialCharTok{==}\NormalTok{ feature\_type, }\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(common\_name\_lumped)) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{mutate}\NormalTok{(}
+      \AttributeTok{hour\_am\_pm =} \FunctionTok{format}\NormalTok{(start\_time, }\StringTok{"\%I \%p"}\NormalTok{),}
+      \AttributeTok{hour\_am\_pm =} \FunctionTok{factor}\NormalTok{(hour\_am\_pm, }\AttributeTok{levels =}\NormalTok{ hour\_levels),}
+      \AttributeTok{common\_name\_lumped =} \FunctionTok{factor}\NormalTok{(common\_name\_lumped, }\AttributeTok{levels =}\NormalTok{ species\_levels)}
+\NormalTok{    ) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{count}\NormalTok{(hour\_am\_pm, common\_name\_lumped, }\AttributeTok{name =} \StringTok{"count"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{complete}\NormalTok{(hour\_am\_pm, common\_name\_lumped, }\AttributeTok{fill =} \FunctionTok{list}\NormalTok{(}\AttributeTok{count =} \DecValTok{0}\NormalTok{))}
+\NormalTok{\}}
+
+\CommentTok{\# Create padded datasets}
+\NormalTok{hourly\_boulder }\OtherTok{\textless{}{-}} \FunctionTok{pad\_hourly}\NormalTok{(merged\_data\_lumped, }\StringTok{"Boulder"}\NormalTok{)}
+\NormalTok{hourly\_hib     }\OtherTok{\textless{}{-}} \FunctionTok{pad\_hourly}\NormalTok{(merged\_data\_lumped, }\StringTok{"Constructed Hibernacula"}\NormalTok{)}
+\NormalTok{hourly\_log     }\OtherTok{\textless{}{-}} \FunctionTok{pad\_hourly}\NormalTok{(merged\_data\_lumped, }\StringTok{"Log"}\NormalTok{)}
+
+\CommentTok{\# Reusable theme adjustments}
+\NormalTok{shared\_theme }\OtherTok{\textless{}{-}} \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}
+    \AttributeTok{axis.text.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{angle =} \DecValTok{90}\NormalTok{, }\AttributeTok{vjust =} \FloatTok{0.5}\NormalTok{, }\AttributeTok{hjust =} \DecValTok{1}\NormalTok{),  }\CommentTok{\# vertical labels}
+\NormalTok{  )}
+
+\CommentTok{\# Find maximum count across all datasets for consistent y{-}axis limits}
+\NormalTok{max\_count }\OtherTok{\textless{}{-}} \DecValTok{100}
+
+\CommentTok{\# Plot Boulder}
+\NormalTok{plot\_boulder }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(hourly\_boulder, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ hour\_am\_pm, }\AttributeTok{y =}\NormalTok{ count, }\AttributeTok{fill =}\NormalTok{ common\_name\_lumped)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{, }\AttributeTok{position =} \StringTok{"stack"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =}\NormalTok{ species\_palette, }\AttributeTok{name =} \StringTok{"Species"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{limits =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, max\_count)) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Boulder Sites"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Hour of Day (AM/PM)"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{""}
+\NormalTok{  ) }\SpecialCharTok{+}
+\NormalTok{   shared\_theme}
+
+\CommentTok{\# Plot Hibernacula}
+\NormalTok{plot\_hib }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(hourly\_hib, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ hour\_am\_pm, }\AttributeTok{y =}\NormalTok{ count, }\AttributeTok{fill =}\NormalTok{ common\_name\_lumped)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{, }\AttributeTok{position =} \StringTok{"stack"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =}\NormalTok{ species\_palette, }\AttributeTok{name =} \StringTok{"Species"}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{limits =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, max\_count)) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Constructed Hibernacula"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{""}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Observation Count"}
+\NormalTok{  ) }\SpecialCharTok{+}
+\NormalTok{  shared\_theme}
+
+  
+\CommentTok{\# Plot Log}
+\NormalTok{plot\_log }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(hourly\_log, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ hour\_am\_pm, }\AttributeTok{y =}\NormalTok{ count, }\AttributeTok{fill =}\NormalTok{ common\_name\_lumped)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{, }\AttributeTok{position =} \StringTok{"stack"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =}\NormalTok{ species\_palette, }\AttributeTok{name =} \StringTok{"Species"}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{limits =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, max\_count)) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Log Sites"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{""}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{""}
+\NormalTok{  ) }\SpecialCharTok{+}
+\NormalTok{  shared\_theme}
+
+\CommentTok{\# Combine with patchwork}
+\NormalTok{(plot\_hib }\SpecialCharTok{|}\NormalTok{ plot\_boulder }\SpecialCharTok{|}\NormalTok{ plot\_log) }\SpecialCharTok{+}
+  \FunctionTok{plot\_layout}\NormalTok{(}\AttributeTok{guides =} \StringTok{"collect"}\NormalTok{) }\SpecialCharTok{\&}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.position =} \StringTok{"bottom"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{hibernacula-analysis-updated-6-26-25_files/figure-pdf/fig-hourly-by-species-combined-1.png}}
+
+}
+
+\caption{\label{fig-hourly-by-species-combined}Hourly wildlife
+observations by species across three habitat features. These plots
+highlight differences in diel activity patterns across Boulder, Log, and
+Constructed Hibernacula sites.}
+
+\end{figure}%
+
+\subsection{Species counts for Each Taxonomic
+Class}\label{species-counts-for-each-taxonomic-class}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Summarize species counts by feature\_type\_methodology, filtering out "NA NA" genus\_species}
+\NormalTok{species\_abundance }\OtherTok{\textless{}{-}}\NormalTok{ merged\_data\_with\_deduplicated\_observations }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{group\_by}\NormalTok{(feature\_type\_methodology, class, family, genus\_species, common\_name) }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{abundance =} \FunctionTok{n}\NormalTok{(), }\AttributeTok{.groups =} \StringTok{\textquotesingle{}drop\textquotesingle{}}\NormalTok{)}
+
+\CommentTok{\# Plot for Aves}
+\NormalTok{aves\_plot }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{filter}\NormalTok{(species\_abundance, class }\SpecialCharTok{==} \StringTok{"Aves"}\NormalTok{), }
+                    \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ common\_name, }\AttributeTok{y =}\NormalTok{ abundance, }\AttributeTok{fill =}\NormalTok{ feature\_type\_methodology)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{, }\AttributeTok{position =} \StringTok{"stack"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_brewer}\NormalTok{(}\AttributeTok{palette =} \StringTok{"Set2"}\NormalTok{) }\SpecialCharTok{+}  \CommentTok{\# More distinct colors}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Species Abundance for Aves"}\NormalTok{, }\AttributeTok{x =} \StringTok{"Common Name"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Abundance"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{axis.text.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{angle =} \DecValTok{45}\NormalTok{, }\AttributeTok{hjust =} \DecValTok{1}\NormalTok{, }\AttributeTok{vjust =} \DecValTok{1}\NormalTok{))}\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{fill =} \StringTok{"Feature Type"}\NormalTok{)}
+\NormalTok{aves\_plot}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{hibernacula-analysis-updated-6-26-25_files/figure-pdf/fig-aves-abundance-1.png}}
+
+}
+
+\caption{\label{fig-aves-abundance}Distribution of bird species
+observations across different feature types. Each bar represents a
+unique bird taxon with coloring indicating the feature type where it was
+observed.}
+
+\end{figure}%
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Plot for Mammalia}
+\NormalTok{mammalia\_plot }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{filter}\NormalTok{(species\_abundance, class }\SpecialCharTok{==} \StringTok{"Mammalia"}\NormalTok{), }
+                        \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ common\_name, }\AttributeTok{y =}\NormalTok{ abundance, }\AttributeTok{fill =}\NormalTok{ feature\_type\_methodology)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{, }\AttributeTok{position =} \StringTok{"stack"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_brewer}\NormalTok{(}\AttributeTok{palette =} \StringTok{"Set2"}\NormalTok{) }\SpecialCharTok{+}  \CommentTok{\# More distinct colors}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Species Abundance for Mammalia"}\NormalTok{, }\AttributeTok{x =} \StringTok{"Common Name"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Abundance"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{axis.text.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{angle =} \DecValTok{45}\NormalTok{, }\AttributeTok{hjust =} \DecValTok{1}\NormalTok{, }\AttributeTok{vjust =} \DecValTok{1}\NormalTok{))}\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{fill =} \StringTok{"Feature Type"}\NormalTok{) }
+\NormalTok{mammalia\_plot}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{hibernacula-analysis-updated-6-26-25_files/figure-pdf/fig-mammalia-abundance-1.png}}
+
+}
+
+\caption{\label{fig-mammalia-abundance}Distribution of mammal species
+observations across different feature types. The visualization
+highlights which mammal taxa were most frequently observed at each
+feature type.}
+
+\end{figure}%
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{reptilia\_plot }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{filter}\NormalTok{(species\_abundance, class }\SpecialCharTok{==} \StringTok{"Reptilia"}\NormalTok{), }
+                        \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ common\_name, }\AttributeTok{y =}\NormalTok{ abundance, }\AttributeTok{fill =}\NormalTok{ feature\_type\_methodology)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{, }\AttributeTok{position =} \StringTok{"stack"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_brewer}\NormalTok{(}\AttributeTok{palette =} \StringTok{"Set2"}\NormalTok{) }\SpecialCharTok{+}  \CommentTok{\# More distinct colors}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Species Abundance for Reptilia"}\NormalTok{, }\AttributeTok{x =} \StringTok{"Common Name"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Abundance"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{axis.text.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{angle =} \DecValTok{45}\NormalTok{, }\AttributeTok{hjust =} \DecValTok{1}\NormalTok{, }\AttributeTok{vjust =} \DecValTok{1}\NormalTok{))}\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{fill =} \StringTok{"Feature Type"}\NormalTok{)}
+\NormalTok{reptilia\_plot}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{hibernacula-analysis-updated-6-26-25_files/figure-pdf/fig-reptilia-abundance-1.png}}
+
+}
+
+\caption{\label{fig-reptilia-abundance}Distribution of reptile species
+observations across different feature types. The chart shows which
+reptile taxa utilized each feature type and their relative abundance.}
+
+\end{figure}%
+
+\subsection{Map of Deployments and
+Observations}\label{map-of-deployments-and-observations}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(maptiles)}
+\FunctionTok{library}\NormalTok{(terra)}
+\FunctionTok{library}\NormalTok{(sf)}
+\FunctionTok{library}\NormalTok{(ggplot2)}
+\FunctionTok{library}\NormalTok{(cowplot)}
+\FunctionTok{library}\NormalTok{(RColorBrewer)}
+\FunctionTok{library}\NormalTok{(maps)}
+
+\CommentTok{\# Convert site\_summary to sf object}
+\NormalTok{site\_sf }\OtherTok{\textless{}{-}} \FunctionTok{st\_as\_sf}\NormalTok{(site\_summary, }\AttributeTok{coords =} \FunctionTok{c}\NormalTok{(}\StringTok{"longitude"}\NormalTok{, }\StringTok{"latitude"}\NormalTok{), }\AttributeTok{crs =} \DecValTok{4326}\NormalTok{)}
+
+\CommentTok{\# Get bounding box and expand slightly}
+\NormalTok{bbox }\OtherTok{\textless{}{-}} \FunctionTok{st\_bbox}\NormalTok{(site\_sf)}
+\NormalTok{padding }\OtherTok{\textless{}{-}} \FloatTok{0.001}  \CommentTok{\# Reduced padding for tighter view}
+\NormalTok{west\_shift }\OtherTok{\textless{}{-}} \FloatTok{0.0}  \CommentTok{\# Adjust this value to shift more/less west}
+\NormalTok{bbox\_expanded }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}
+  \AttributeTok{xmin =}\NormalTok{ bbox[}\StringTok{"xmin"}\NormalTok{] }\SpecialCharTok{{-}}\NormalTok{ padding }\SpecialCharTok{{-}}\NormalTok{ west\_shift,}
+  \AttributeTok{xmax =}\NormalTok{ bbox[}\StringTok{"xmax"}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ padding }\SpecialCharTok{{-}}\NormalTok{ west\_shift,}
+  \AttributeTok{ymin =}\NormalTok{ bbox[}\StringTok{"ymin"}\NormalTok{] }\SpecialCharTok{{-}}\NormalTok{ padding,}
+  \AttributeTok{ymax =}\NormalTok{ bbox[}\StringTok{"ymax"}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ padding}
+\NormalTok{)}
+
+\CommentTok{\# Download satellite tiles (Esri)}
+\NormalTok{basemap }\OtherTok{\textless{}{-}} \FunctionTok{get\_tiles}\NormalTok{(site\_sf, }\AttributeTok{provider =} \StringTok{"Esri.WorldImagery"}\NormalTok{, }\AttributeTok{zoom =} \DecValTok{18}\NormalTok{)}
+
+\CommentTok{\# Convert raster to data.frame for ggplot}
+\NormalTok{rgb\_df }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(basemap, }\AttributeTok{xy =} \ConstantTok{TRUE}\NormalTok{)}
+\FunctionTok{colnames}\NormalTok{(rgb\_df) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"x"}\NormalTok{, }\StringTok{"y"}\NormalTok{, }\StringTok{"red"}\NormalTok{, }\StringTok{"green"}\NormalTok{, }\StringTok{"blue"}\NormalTok{)}
+\NormalTok{rgb\_df}\SpecialCharTok{$}\NormalTok{hex }\OtherTok{\textless{}{-}} \FunctionTok{rgb}\NormalTok{(rgb\_df}\SpecialCharTok{$}\NormalTok{red, rgb\_df}\SpecialCharTok{$}\NormalTok{green, rgb\_df}\SpecialCharTok{$}\NormalTok{blue, }\AttributeTok{maxColorValue =} \DecValTok{255}\NormalTok{)}
+
+\CommentTok{\# Set feature type colors}
+\NormalTok{feature\_colors }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}
+  \StringTok{"Boulder"} \OtherTok{=} \FunctionTok{brewer.pal}\NormalTok{(}\DecValTok{3}\NormalTok{, }\StringTok{"Set2"}\NormalTok{)[}\DecValTok{1}\NormalTok{],}
+  \StringTok{"Constructed Hibernacula"} \OtherTok{=} \FunctionTok{brewer.pal}\NormalTok{(}\DecValTok{3}\NormalTok{, }\StringTok{"Set2"}\NormalTok{)[}\DecValTok{2}\NormalTok{],}
+  \StringTok{"Log"} \OtherTok{=} \FunctionTok{brewer.pal}\NormalTok{(}\DecValTok{3}\NormalTok{, }\StringTok{"Set2"}\NormalTok{)[}\DecValTok{3}\NormalTok{]}
+\NormalTok{)}
+
+\CommentTok{\# Main satellite deployment map}
+\NormalTok{main\_map }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{geom\_raster}\NormalTok{(}\AttributeTok{data =}\NormalTok{ rgb\_df, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ x, }\AttributeTok{y =}\NormalTok{ y, }\AttributeTok{fill =}\NormalTok{ hex)) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_identity}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{geom\_sf}\NormalTok{(}\AttributeTok{data =}\NormalTok{ site\_sf, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{color =}\NormalTok{ feature\_type\_methodology, }\AttributeTok{size =}\NormalTok{ avg\_daily\_observations), }
+          \AttributeTok{alpha =} \FloatTok{0.9}\NormalTok{, }\AttributeTok{stroke =} \FloatTok{0.5}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_color\_manual}\NormalTok{(}\AttributeTok{values =}\NormalTok{ feature\_colors, }\AttributeTok{name =} \StringTok{"Feature Type"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_size}\NormalTok{(}\AttributeTok{name =} \StringTok{"Avg. Daily Obs."}\NormalTok{, }\AttributeTok{range =} \FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{6}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{coord\_sf}\NormalTok{(}\AttributeTok{xlim =} \FunctionTok{c}\NormalTok{(bbox\_expanded[}\StringTok{"xmin"}\NormalTok{], bbox\_expanded[}\StringTok{"xmax"}\NormalTok{]),}
+           \AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(bbox\_expanded[}\StringTok{"ymin"}\NormalTok{], bbox\_expanded[}\StringTok{"ymax"}\NormalTok{])) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{(}\AttributeTok{base\_size =} \DecValTok{12}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}
+    \AttributeTok{panel.grid =} \FunctionTok{element\_blank}\NormalTok{(),}
+    \AttributeTok{legend.position =} \StringTok{"bottom"}\NormalTok{,}
+    \AttributeTok{axis.title =} \FunctionTok{element\_blank}\NormalTok{(),}
+    \AttributeTok{legend.box =} \StringTok{"horizontal"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{guides}\NormalTok{(}
+    \AttributeTok{color =} \FunctionTok{guide\_legend}\NormalTok{(}\AttributeTok{override.aes =} \FunctionTok{list}\NormalTok{(}\AttributeTok{size =} \DecValTok{4}\NormalTok{)),}
+    \AttributeTok{size =} \FunctionTok{guide\_legend}\NormalTok{(}\AttributeTok{override.aes =} \FunctionTok{list}\NormalTok{(}\AttributeTok{color =} \StringTok{"black"}\NormalTok{))}
+\NormalTok{  )}
+
+\CommentTok{\# Calculate study area centroid}
+\NormalTok{centroid\_coords }\OtherTok{\textless{}{-}}\NormalTok{ site\_sf }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{st\_coordinates}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{as.data.frame}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarise}\NormalTok{(}\AttributeTok{longitude =} \FunctionTok{mean}\NormalTok{(X), }\AttributeTok{latitude =} \FunctionTok{mean}\NormalTok{(Y))}
+
+\CommentTok{\# Overview map of CA with study area location}
+\NormalTok{ca\_map }\OtherTok{\textless{}{-}} \FunctionTok{map}\NormalTok{(}\StringTok{"state"}\NormalTok{, }\AttributeTok{plot =} \ConstantTok{FALSE}\NormalTok{, }\AttributeTok{fill =} \ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{st\_as\_sf}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(ID }\SpecialCharTok{==} \StringTok{"california"}\NormalTok{)}
+
+\NormalTok{overview\_map }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{geom\_sf}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ca\_map, }\AttributeTok{fill =} \StringTok{"gray90"}\NormalTok{, }\AttributeTok{color =} \StringTok{"gray60"}\NormalTok{, }\AttributeTok{size =} \FloatTok{0.3}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data =}\NormalTok{ centroid\_coords, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ longitude, }\AttributeTok{y =}\NormalTok{ latitude), }
+             \AttributeTok{color =} \StringTok{"red"}\NormalTok{, }\AttributeTok{size =} \DecValTok{3}\NormalTok{, }\AttributeTok{shape =} \DecValTok{16}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_void}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}
+    \AttributeTok{panel.border =} \FunctionTok{element\_rect}\NormalTok{(}\AttributeTok{color =} \StringTok{"black"}\NormalTok{, }\AttributeTok{fill =} \ConstantTok{NA}\NormalTok{, }\AttributeTok{size =} \FloatTok{0.5}\NormalTok{),}
+    \AttributeTok{plot.background =} \FunctionTok{element\_rect}\NormalTok{(}\AttributeTok{fill =} \StringTok{"white"}\NormalTok{, }\AttributeTok{color =} \ConstantTok{NA}\NormalTok{)}
+\NormalTok{  )}
+
+\CommentTok{\# Combine maps with proper positioning}
+\NormalTok{final\_map }\OtherTok{\textless{}{-}} \FunctionTok{ggdraw}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{draw\_plot}\NormalTok{(main\_map) }\SpecialCharTok{+}
+  \FunctionTok{draw\_plot}\NormalTok{(overview\_map, }\AttributeTok{x =} \FloatTok{0.68}\NormalTok{, }\AttributeTok{y =} \FloatTok{0.65}\NormalTok{, }\AttributeTok{width =} \FloatTok{0.3}\NormalTok{, }\AttributeTok{height =} \FloatTok{0.3}\NormalTok{)}
+
+\NormalTok{final\_map}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{hibernacula-analysis-updated-6-26-25_files/figure-pdf/fig-deployment-map-1.png}}
+
+}
+
+\caption{\label{fig-deployment-map}\textbf{Spatial distribution of
+camera trap deployments at the study site.} Circle color indicates
+feature type and size reflects the average daily number of wildlife
+observations. Inset map shows the location within California.}
+
+\end{figure}%
+
+\section{Conclusion}\label{conclusion}
+
+This study provides evidence that wildlife visitation rates differ
+significantly between Constructed Hibernacula and Log/Boulder features
+at NCOS. Camera trap data revealed that Constructed Hibernacula
+supported higher average daily observations compared to Log/Boulder
+features, with a statistically significant effect shown through
+Quasi-Poisson regression models.
+
+Beyond the statistics, the ecological implications of these findings are
+particularly informative. The increased frequency of observations at
+constructed hibernacula appears to be driven by species such as
+squirrels and mice that establish semi-permanent residency in these
+structures. In contrast, logs and boulders seem to serve as transient or
+opportunistic shelters used by a broader variety of taxa but with less
+frequent returns.
+
+This suggests that constructed hibernacula may function more like
+microhabitat ``core areas'' or refugia---providing thermal stability,
+protection from predators, and consistent cover---particularly
+attractive to small mammals. The presence of crows at these same sites
+may further support this idea, as they may be drawn to hibernacula to
+hunt small vertebrates or scavenge, indicating a potentially complex
+trophic interaction centered around these features.
+
+As such, different habitat enhancements serve different ecological
+roles, and a one-size-fits-all approach may not maximize biodiversity
+benefits. While logs and boulders contribute to structural heterogeneity
+and attract a wider diversity of species, hibernacula appear to offer
+sustained ecological value as shelter and possibly breeding or feeding
+grounds.
+
+These findings advocate for the intentional inclusion of varied habitat
+structures in restoration planning, especially those that provide
+below-ground complexity. Hibernacula in particular may fill a niche that
+is otherwise underrepresented in restoration design.
+
+\section{Limitations and Future
+Directions}\label{limitations-and-future-directions}
+
+I want to acknowledge several caveats that should be considered when
+interpreting these results.
+
+\begin{itemize}
+\item
+  Some camera trap deployments (e.g.~H4C12, H8C12) had limited
+  visibility due to vegetation overgrowth, reducing the likelihood of
+  recording observations.
+\item
+  Variation in camera setup also introduced potential bias, as some
+  sites had only one camera while most had two, affecting the chances of
+  detecting wildlife.
+\item
+  Furthermore, camera misfirings were not uncommon, which may have led
+  to gaps in data collection or inflated detection counts in certain
+  instances (e.g.~if the movement of vegetation triggered an image
+  capture but a stationary organism happened to be present).
+\end{itemize}
+
+Future studies with larger sample sizes and longer monitoring periods
+could refine these findings, further clarifying the ecological value of
+different habitat structures.
+
+
+
+
+\end{document}
