@@ -758,10 +758,10 @@ t1 = species_final_pt_2 %>%
   add_header_above(c(" " = 3, "Constructed Hibernacula" = 3, "Boulders" = 3, "Logs" = 3, "Total" = 3))
 
 # Save the kable as an HTML file
-save_kable(t1, "species_table_pt_2.html")
+save_kable(t1, here("misc","species_table_pt_2.html"))
 
 # Use webshot2 to save as PNG image
-webshot("species_table_pt_2.html", here("figures","species_table_pt_2.png"), zoom = 2, vwidth = 1800)
+webshot(here("misc","species_table_pt_2.html"), here("figures","species_table_pt_2.png"), zoom = 2, vwidth = 1800)
 ```
 
 ### Map
@@ -1344,10 +1344,10 @@ t1_pt1 = species_final_pt_1 %>%
   add_header_above(c(" " = 1, "Constructed Hibernacula" = 3))
 
 # Save the kable as an HTML file
-save_kable(t1_pt1, "species_table_pt1.html")
+save_kable(t1_pt1, here("misc","species_table_pt1.html"))
 
 # Use webshot2 to save as PNG image
-webshot("species_table_pt1.html", here("figures","species_table_pt1.png"), zoom = 2, vwidth = 550)
+webshot(here("misc","species_table_pt1.html"), here("figures","species_table_pt1.png"), zoom = 2, vwidth = 550)
 
 ```
     
@@ -1466,8 +1466,8 @@ t1_hourly <- species_final_hourly %>%
   add_header_above(c(" " = 1, "Constructed Hibernacula" = 3, "Boulders" = 3, "Logs" = 3, "Total" = 3))
 
 # Save as HTML and PNG
-save_kable(t1_hourly, "species_table_hourly.html")
-webshot("species_table_hourly.html", here("figures", "species_table_hourly_pt_1_and_2.png"), zoom = 2, vwidth = 1800)
+save_kable(t1_hourly, here("misc","species_table_hourly.html"))
+webshot(here("misc","species_table_hourly.html"), here("figures", "species_table_hourly_pt_1_and_2.png"), zoom = 2, vwidth = 1800)
 
 ```
 
