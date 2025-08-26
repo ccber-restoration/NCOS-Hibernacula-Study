@@ -337,11 +337,20 @@ nb_table_output <- modelsummary::modelsummary(
   ),
   estimate = "{estimate}{stars}",
   statistic = "p.value",
+  exponentiate = TRUE,  # Convert all to IRRs
+   coef_map = c(
+    "(Intercept)" = "Reference†",
+    "feature_type_methodology_recodedLog/Boulder" = "Log/Boulder Feature",
+    "trailyes" = "Adjacent to Trail",
+    "habitat_typeGrassland" = "Grassland Habitat",
+    "habitat_typeScrub" = "Scrub Habitat"
+  ),
   stars = c("*" = 0.05, "**" = 0.01, "***" = 0.001),
   gof_omit = "BIC|Log.Lik",
   output = "gt",
   title = "Negative Binomial Models with Offset for Camera Hours",
-  notes = "Significance codes: '***' p < 0.001, '**' p < 0.01, '*' p < 0.05"
+  notes = c("Coefficients are displayed exponentiated.","Significance codes: '***' p < 0.001, '**' p < 0.01, '*' p < 0.05",
+            "† Reference conditions: constructed hibernacula, not adjacent to trail, in marsh habitat.")
 ) %>%
   gt::gtsave(filename = here("figures", "model_summary_nb_offset_pt_2.png"))
 ```
@@ -383,12 +392,12 @@ summary_pt_2_by_feature_type_recoded <- placename_summary_pt_2 %>%
 
 # Step 2: Plot
 p1 = ggplot(placename_summary_pt_2, aes(x = feature_type_methodology_recoded, y = detections_per_camera_day)) +
-  geom_jitter(aes(color = feature_type_methodology_recoded), width = 0.25, alpha = 0.6, size = 2, show.legend = FALSE) +
+  geom_jitter(aes(color = feature_type_methodology_recoded), width = 0.25, alpha = 0.6, size = 3.5, show.legend = FALSE) +
   geom_errorbar(data = summary_pt_2_by_feature_type_recoded, aes(x = feature_type_methodology_recoded, y = mean, ymin = lower, ymax = upper),
-                width = 0.15, color = "black", linewidth = 0.7) +
+                width = 0.15, color = "black", linewidth = 1) +
   geom_point(data = summary_pt_2_by_feature_type_recoded,
              aes(x = feature_type_methodology_recoded, y = mean),
-             shape = 23, size = 4, fill = "black", color = "black", stroke = 1.2) +
+             shape = 23, size = 6, fill = "black", color = "black", stroke = 1.5) +
   scale_color_manual(values = c("Log/Boulder" = "#2992a5", "Constructed Hibernacula" = "#fc8d62")) +
   labs(
     title = "Detection Rate per Camera Day by Feature Type",
@@ -396,13 +405,17 @@ p1 = ggplot(placename_summary_pt_2, aes(x = feature_type_methodology_recoded, y 
     y = "Detection Rate (detections / camera day)"
   ) +
   theme_minimal() +
-  theme(axis.text.x = element_text(vjust = 1),
-        plot.title = element_text(size = 14, face = "bold"),) +
-  theme(legend.position = "none")
+  theme(
+    axis.text.x = element_text(vjust = 1, size = 14),
+    axis.text.y = element_text(size = 12),
+    axis.title.x = element_text(size = 14),
+    axis.title.y = element_text(size = 14),
+    plot.title = element_text(size = 16, face = "bold"),
+    legend.position = "none"
+  )
 
-# Save the plot as a PNG
-ggsave(here("figures","feature_type_detection_rate_pt_2.png"), plot = p1, width = 8, height = 6, dpi = 300, bg = "white")
-
+# Save the plot as a PNG (narrower width)
+ggsave(here("figures","feature_type_detection_rate_pt_2.png"), plot = p1, width = 6, height = 6, dpi = 300, bg = "white")
 p1
 ```
 
@@ -813,7 +826,8 @@ map_main <- ggplot() +
     location = "bl",      # bottom left
     pad_x = unit(0.45, "in"),
     pad_y = unit(0.3, "in"),
-    width_hint = 0.25
+    width_hint = 0.25,
+    text_col = "white"   # White text
   ) +
   annotation_north_arrow(
     location = "br",      # bottom right
@@ -827,6 +841,8 @@ map_main <- ggplot() +
     panel.grid = element_blank(),
     legend.position = "bottom",
     axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
     legend.box = "horizontal"
   ) +
   guides(
@@ -848,7 +864,7 @@ map_CA <- map("state", plot = FALSE, fill = TRUE) %>%
 map_overview <- ggplot() +
   geom_sf(data = map_CA, fill = "gray90", color = "gray60", size = 0.3) +
   geom_point(data = map_centroid_coords, aes(x = longitude, y = latitude), 
-             color = "red", size = 3, shape = 16) +
+             color = "red", size = 3, shape = 15) +
   theme_void() +
   theme(
     panel.border = element_rect(color = "black", fill = NA, size = 0.5),
@@ -858,7 +874,7 @@ map_overview <- ggplot() +
 # Combine maps with proper positioning
 map_final <- ggdraw() +
   draw_plot(map_main) +
-  draw_plot(map_overview, x = 0.705, y = 0.655, width = 0.3, height = 0.3)
+  draw_plot(map_overview, x = 0.69, y = 0.646, width = 0.3, height = 0.3)
 
 map_final
 
@@ -1127,7 +1143,7 @@ plots <- lapply(seq_along(feature_types), function(i) {
     species_hourly_presence_by_feature_pt_1_and_2 %>% filter(feature_type_methodology == ft),
     aes(x = residency_status, y = detections_per_camera_day)
   ) +
-    geom_jitter(aes(fill = species_fill), color = "black", shape = 21, width = 0.25, alpha = .85, size = 4, show.legend = TRUE) +
+    geom_jitter(aes(fill = species_fill), color = "black", shape = 21, width = 0.25, alpha = .85, size = 5, show.legend = TRUE) +
     geom_errorbar(
       data = summary_stats_species_hourly_presence_by_feature_pt_1_and_2 %>% filter(feature_type_methodology == ft),
       aes(y = mean, ymin = lower, ymax = upper),
@@ -1136,7 +1152,7 @@ plots <- lapply(seq_along(feature_types), function(i) {
     geom_point(
       data = summary_stats_species_hourly_presence_by_feature_pt_1_and_2 %>% filter(feature_type_methodology == ft),
       aes(y = mean),
-      shape = 23, size = 4,
+      shape = 23, size = 5,
       fill = "black", color = "black", stroke = 1.2
     ) +
     scale_fill_manual(values = extended_palette, name="Species")+
@@ -1145,7 +1161,10 @@ plots <- lapply(seq_along(feature_types), function(i) {
       title = paste(ft)
     ) +
     theme_minimal() +
-    theme(axis.text.x = element_text(vjust = 1)) 
+    theme(
+      axis.text.x = element_text(vjust = 1),
+      plot.title = element_text(hjust = 0.5, size = 12, face = "bold")  # Center and style the title
+    )
   
   # Only add y-axis label to the first (leftmost) plot
   if(i == 1) {
@@ -1173,10 +1192,9 @@ p4 <- wrap_plots(plots, guides = "collect") &
     legend.title = element_text(size = 10),
     legend.text = element_text(size = 9)
   ) &
-  guides(fill = guide_legend(nrow = 1, byrow = TRUE))  # Adjust nrow as needed
+  guides(fill = guide_legend(nrow = 1, byrow = TRUE))
 
 p4
-
 ggsave(here("figures","species_residency_status_by_feature_type_pt_1_and_2.png"), 
        plot = p4, 
        width = 12, height = 6, dpi = 300, bg = "white")
@@ -1248,6 +1266,15 @@ p5
 ggsave(here("figures","entrances_by_feature_type_pt_1_and_2.png"), 
        plot = p5, 
        width = 8, height = 6, dpi = 300, bg = "white")
+```
+
+```{r}
+# Statistical test: Pairwise Wilcoxon test for number of entrances by feature type
+pairwise.wilcox.test(
+    placename_summary_pt_1_and_2$notable_entrances,
+    placename_summary_pt_1_and_2$feature_type_methodology,
+    p.adjust.method = "holm"
+)
 ```
     
 ## Species List for Part 1
@@ -1740,5 +1767,213 @@ save_kable(t1_hourly, here("misc","species_table_hourly_pt_1_and_2_separated.htm
 webshot(here("misc","species_table_hourly_pt_1_and_2_separated.html"),
         here("figures","species_table_hourly_pt_1_and_2_separated2.png"),
         zoom = 2, vwidth = 1800)
+```
+
+
+
+# APPROPRIATENESS TESTS: 
+```{r}
+# ==============================================================================
+# NEGATIVE BINOMIAL MODEL DIAGNOSTICS
+# ==============================================================================
+
+# Load additional packages for diagnostics
+library(performance)  # for model performance metrics
+library(DHARMa)       # for residual diagnostics
+library(car)          # for outlier tests and VIF
+
+# 1. OVERDISPERSION TEST
+# ==============================================================================
+# Test if negative binomial is appropriate vs Poisson
+cat("=== OVERDISPERSION ASSESSMENT ===\n")
+cat("Raw variance-to-mean ratio:", var(placename_summary_pt_2$total_detections) / mean(placename_summary_pt_2$total_detections), "\n")
+
+# Compare Poisson vs Negative Binomial for best model
+poisson_model <- glm(total_detections ~ feature_type_methodology_recoded + trail + habitat_type + offset(log(total_camera_hours)), 
+                     family = poisson(), data = placename_summary_pt_2)
+
+# Overdispersion test
+overdispersion_test <- performance::check_overdispersion(poisson_model)
+print(overdispersion_test)
+
+# 2. MODEL SELECTION DIAGNOSTICS
+# ==============================================================================
+# Create list of all models for comparison
+all_models <- list(
+  "Feature Type" = nb_offset_1a,
+  "Trail" = nb_offset_1b,
+  "Habitat Type" = nb_offset_1c,
+  "Feature Type + Trail" = nb_offset_2a,
+  "Feature Type + Habitat Type" = nb_offset_2b,
+  "Trail + Habitat Type" = nb_offset_2c,
+  "Full Model" = nb_offset_3a
+)
+
+# Comprehensive model comparison
+model_comparison <- data.frame(
+  Model = names(all_models),
+  AIC = sapply(all_models, AIC),
+  BIC = sapply(all_models, BIC),
+  LogLik = sapply(all_models, logLik),
+  Deviance = sapply(all_models, deviance),
+  Theta = sapply(all_models, function(x) x$theta),
+  df = sapply(all_models, function(x) x$df.residual)
+) %>%
+  mutate(
+    Delta_AIC = AIC - min(AIC),
+    Delta_BIC = BIC - min(BIC),
+    AIC_weight = exp(-0.5 * Delta_AIC) / sum(exp(-0.5 * Delta_AIC))
+  ) %>%
+  arrange(AIC)
+
+print("=== MODEL COMPARISON TABLE ===")
+print(model_comparison)
+
+# Likelihood ratio tests for nested models
+cat("\n=== LIKELIHOOD RATIO TESTS ===\n")
+cat("Feature Type vs Full Model:\n")
+print(anova(nb_offset_1a, nb_offset_3a))
+
+cat("\nTrail vs Full Model:\n")
+print(anova(nb_offset_1b, nb_offset_3a))
+
+cat("\nHabitat vs Full Model:\n")
+print(anova(nb_offset_1c, nb_offset_3a))
+
+# 3. RESIDUAL DIAGNOSTICS
+# ==============================================================================
+# Use the best model (lowest AIC)
+best_model <- all_models[[which.min(sapply(all_models, AIC))]]
+cat("\n=== RESIDUAL DIAGNOSTICS FOR BEST MODEL ===\n")
+cat("Best model:", names(all_models)[which.min(sapply(all_models, AIC))], "\n")
+
+# DHARMa residuals (recommended for GLMMs and count models)
+simulationOutput <- simulateResiduals(fittedModel = best_model, plot = FALSE)
+
+# Create diagnostic plots
+par(mfrow = c(2, 2))
+
+# QQ plot of residuals
+plotQQunif(simulationOutput, main = "QQ Plot of Scaled Residuals")
+
+# Residuals vs fitted
+plotResiduals(simulationOutput, main = "Residuals vs Fitted")
+
+# Additional diagnostic plots
+plot(best_model, which = 1, main = "Residuals vs Fitted (Base R)")
+plot(best_model, which = 2, main = "Normal Q-Q Plot")
+
+par(mfrow = c(1, 1))
+
+# Formal tests
+cat("\nFormal diagnostic tests:\n")
+cat("Shapiro-Wilk test for normality of residuals: p =", shapiro.test(residuals(best_model))$p.value, "\n")
+cat("Kolmogorov-Smirnov test (DHARMa):\n")
+print(testResiduals(simulationOutput))
+
+# 4. OUTLIER AND INFLUENCE DIAGNOSTICS
+# ==============================================================================
+cat("\n=== OUTLIER AND INFLUENCE DIAGNOSTICS ===\n")
+
+# Cook's distance
+cooks_d <- cooks.distance(best_model)
+cat("Observations with Cook's D > 4/n:\n")
+influential_obs <- which(cooks_d > 4/nrow(placename_summary_pt_2))
+if(length(influential_obs) > 0) {
+  print(placename_summary_pt_2[influential_obs, c("placename", "total_detections", "feature_type_methodology_recoded")])
+} else {
+  cat("No highly influential observations detected.\n")
+}
+
+# Outlier test
+outlier_test <- car::outlierTest(best_model)
+cat("\nBonferroni outlier test:\n")
+print(outlier_test)
+
+# 5. COLLINEARITY DIAGNOSTICS (for models with multiple predictors)
+# ==============================================================================
+if(length(coef(best_model)) > 2) {  # More than just intercept + one predictor
+  cat("\n=== COLLINEARITY DIAGNOSTICS ===\n")
+  
+  # VIF (only for models with multiple predictors)
+  vif_values <- car::vif(best_model)
+  cat("Variance Inflation Factors:\n")
+  print(vif_values)
+  
+  if(any(vif_values > 5)) {
+    cat("WARNING: VIF > 5 detected, indicating potential collinearity issues.\n")
+  }
+}
+
+# 6. GOODNESS OF FIT MEASURES
+# ==============================================================================
+cat("\n=== GOODNESS OF FIT MEASURES ===\n")
+
+# Pseudo R-squared
+null_deviance <- best_model$null.deviance
+residual_deviance <- best_model$deviance
+mcfadden_r2 <- 1 - (residual_deviance / null_deviance)
+
+cat("McFadden's Pseudo R-squared:", round(mcfadden_r2, 3), "\n")
+cat("Theta parameter (dispersion):", round(best_model$theta, 3), "\n")
+cat("Standard error of theta:", round(best_model$SE.theta, 3), "\n")
+
+# 7. PREDICTION ACCURACY (if desired)
+# ==============================================================================
+cat("\n=== PREDICTION ACCURACY ===\n")
+
+# Fitted vs observed
+fitted_vals <- fitted(best_model)
+observed_vals <- placename_summary_pt_2$total_detections
+
+# Correlation between fitted and observed
+correlation <- cor(fitted_vals, observed_vals)
+cat("Correlation between fitted and observed:", round(correlation, 3), "\n")
+
+# Mean Absolute Error
+mae <- mean(abs(fitted_vals - observed_vals))
+cat("Mean Absolute Error:", round(mae, 2), "\n")
+
+# Root Mean Squared Error
+rmse <- sqrt(mean((fitted_vals - observed_vals)^2))
+cat("Root Mean Squared Error:", round(rmse, 2), "\n")
+
+# 8. SAVE DIAGNOSTIC PLOTS
+# ==============================================================================
+# Create a comprehensive diagnostic plot
+png(here("figures", "model_diagnostics_nb_offset.png"), width = 12, height = 8, units = "in", res = 300)
+par(mfrow = c(2, 3))
+
+# Plot 1: Residuals vs Fitted
+plot(fitted(best_model), residuals(best_model, type = "pearson"), 
+     main = "Residuals vs Fitted", xlab = "Fitted Values", ylab = "Pearson Residuals")
+abline(h = 0, col = "red", lty = 2)
+
+# Plot 2: QQ plot
+qqnorm(residuals(best_model, type = "pearson"), main = "Normal Q-Q Plot")
+qqline(residuals(best_model, type = "pearson"), col = "red")
+
+# Plot 3: Cook's distance
+plot(cooks_d, type = "h", main = "Cook's Distance", ylab = "Cook's Distance")
+abline(h = 4/nrow(placename_summary_pt_2), col = "red", lty = 2)
+
+# Plot 4: Fitted vs Observed
+plot(observed_vals, fitted_vals, main = "Fitted vs Observed",
+     xlab = "Observed", ylab = "Fitted")
+abline(0, 1, col = "red", lty = 2)
+
+# Plot 5: Histogram of residuals
+hist(residuals(best_model, type = "pearson"), main = "Histogram of Residuals",
+     xlab = "Pearson Residuals", breaks = 10)
+
+# Plot 6: Scale-location plot
+sqrt_abs_resid <- sqrt(abs(residuals(best_model, type = "pearson")))
+plot(fitted(best_model), sqrt_abs_resid, 
+     main = "Scale-Location Plot", xlab = "Fitted Values", ylab = "√|Residuals|")
+
+dev.off()
+par(mfrow = c(1, 1))
+
+cat("\nDiagnostic plots saved to: figures/model_diagnostics_nb_offset.png\n")
 ```
 
