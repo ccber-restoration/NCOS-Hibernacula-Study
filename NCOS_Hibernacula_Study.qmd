@@ -402,9 +402,9 @@ p1 = ggplot(placename_summary_pt_2, aes(x = feature_type_methodology_recoded, y 
   labs(
     title = "Detection Rate per Camera Day by Feature Type",
     x = "Feature Type",
-    y = "Detection Rate (detections / camera day)"
+    y = "Detections per camera day"
   ) +
-  theme_minimal() +
+  theme_cowplot() +
   theme(
     axis.text.x = element_text(vjust = 1, size = 14),
     axis.text.y = element_text(size = 12),
@@ -881,6 +881,125 @@ map_final
 ggsave(here("figures","deployment_map_pt_2.png"), plot = map_final, width = 10, height = 6, dpi = 300, bg = "white")
 ```
 
+```{r}
+# Extract the zip file 
+unzip(here("data", "ncos_shp.zip"), exdir = here("data")) 
+# List the extracted files to see what's available 
+list.files(here("data"), pattern = "\\.shp$") 
+# Read the shapefile (replace "filename" with the actual .shp filename) 
+open_space_boundary <- st_read(here("data", "ncos_shp.shp"))
+# Transform boundary to WGS84 to match your study area
+open_space_boundary <- st_transform(open_space_boundary, crs = 4326)
+
+# Combined Map for Both Parts of the Study
+placenames_for_deployment_map <- placenames_for_deployment_map_step1 %>%
+  mutate(
+    latitude = round(latitude, 4),
+    longitude = round(longitude, 4)
+  ) %>%
+  group_by(placename, latitude, longitude, feature_type_methodology) %>%
+  summarise(
+    study_part_combined = if_else(n() > 1, "both", as.character(min(study_part))),
+    .groups = "drop"
+  )
+
+
+# Convert site_summary to sf object
+map_site_sf <- st_as_sf(placenames_for_deployment_map, coords = c("longitude", "latitude"), crs = 4326)
+
+# Get bbox from shapefile and expand
+bbox_expanded <- st_bbox(open_space_boundary)
+buffer_val <- 0  # tweak this until boundary fits comfortably
+bbox_expanded <- bbox_expanded + c(-buffer_val, -buffer_val, buffer_val, buffer_val)
+
+# Convert to sf polygon for tile download
+bbox_sf <- st_as_sfc(bbox_expanded)
+
+
+# Download satellite tiles using expanded bbox
+map_basemap <- get_tiles(bbox_sf, provider = "Esri.WorldImagery", zoom = 18)
+
+# Convert raster to data.frame for ggplot
+map_rgb_df <- as.data.frame(map_basemap, xy = TRUE)
+colnames(map_rgb_df) <- c("x", "y", "red", "green", "blue")
+map_rgb_df$hex <- rgb(map_rgb_df$red, map_rgb_df$green, map_rgb_df$blue, maxColorValue = 255)
+
+# Main satellite deployment map - now fits the full open space boundary
+# Main satellite deployment map - now fits the full open space boundary
+map_main <- ggplot() +
+  geom_raster(data = map_rgb_df, aes(x = x, y = y, fill = hex)) +
+  scale_fill_identity() +
+  
+  # Boundary with legend
+  geom_sf(data = open_space_boundary, 
+          aes(linetype = "NCOS Boundary"),  # <- mapped aesthetic
+          color = "yellow", fill = NA, linewidth = 2) +
+  
+  geom_sf(data = map_site_sf, aes(color = feature_type_methodology, shape = study_part_combined),
+          size = 4, alpha = 0.9, stroke = 0.5) +
+  scale_color_manual(values = feature_colors, name = "Feature Type") +
+# Relabel study parts
+  scale_shape_manual(
+    name = "Study Part",
+    values = study_part_shapes,
+    labels = c("1" = "Winter", "2" = "Spring", "both" = "Both")
+  ) +
+  scale_linetype_manual(name = "", values = c("NCOS Boundary" = "solid")) +  # <- legend entry
+  
+  coord_sf(expand = TRUE) +
+  annotation_scale(location = "bl", pad_x = unit(0.45, "in"), pad_y = unit(0.3, "in"),
+                   width_hint = 0.25, text_col = "white") +
+  annotation_north_arrow(location = "br", which_north = "true",
+                         pad_x = unit(0.35, "in"), pad_y = unit(0.23, "in"),
+                         style = north_arrow_fancy_orienteering) +
+  theme_minimal(base_size = 12) +
+  theme(
+    panel.grid = element_blank(),
+    legend.position = "bottom",
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    legend.box = "horizontal"
+  ) +
+  guides(
+    color = guide_legend(override.aes = list(size = 4)),
+    shape = guide_legend(override.aes = list(size = 4)),
+    linetype = guide_legend(override.aes = list(color = "yellow", linewidth = 2)) # <- styled legend
+  )
+
+
+
+# Calculate study area centroid
+map_centroid_coords <- map_site_sf %>%
+  st_coordinates() %>%
+  as.data.frame() %>%
+  summarise(longitude = mean(X), latitude = mean(Y))
+
+# Overview map of CA with study area location
+map_CA <- map("state", plot = FALSE, fill = TRUE) %>%
+  st_as_sf() %>%
+  filter(ID == "california")
+
+map_overview <- ggplot() +
+  geom_sf(data = map_CA, fill = "gray90", color = "gray60", size = 0.3) +
+  geom_point(data = map_centroid_coords, aes(x = longitude, y = latitude), 
+             color = "red", size = 3, shape = 15) +
+  theme_void() +
+  theme(
+    panel.border = element_rect(color = "black", fill = NA, size = 0.5),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
+
+# Combine maps with proper positioning
+map_final <- ggdraw() +
+  draw_plot(map_main) +
+  draw_plot(map_overview, x = 0.72, y = 0.622, width = 0.3, height = 0.3)
+
+map_final
+
+ggsave(here("figures","deployment_map_combined.png"), plot = map_final, width = 10, height = 6, dpi = 300, bg = "white")
+```
+
 # Part 1:
 
 ## Load Data
@@ -1208,7 +1327,7 @@ ggsave(here("figures","species_residency_status_by_feature_type_pt_1_and_2.png")
 
 placename_summary_pt_1_and_2 <- deployments_summary_pt_1_and_2 %>%
   filter(!is.na(notable_entrances)) %>%
-  group_by(placename, feature_type_methodology) %>%
+  group_by(placename, feature_type_methodology,latitude,longitude) %>%
   summarise(
     notable_entrances = max(notable_entrances),
     .groups = "drop"
