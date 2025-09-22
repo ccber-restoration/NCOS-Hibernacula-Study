@@ -86,7 +86,10 @@ library(stringi)       # extended string processing
 
 # Table joins
 library(fuzzyjoin)     # fuzzy matching for joins
-library(IRanges)       # required for interval joins (used by fuzzyjoin)
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("IRanges")
 ```
 
 # Part 2:
@@ -293,6 +296,54 @@ modelsummary::modelsummary(
 
 ```
 ```{r}
+library(dplyr)
+library(stringr)
+library(knitr)
+library(tibble)
+
+# After computing final_df (from previous code), do:
+
+# Step 1: Round numeric columns (except Model and Delta AIC)
+final_df <- final_df %>%
+  mutate(across(
+    -c(Model, `Delta AIC`),
+    ~ as.numeric(.),
+    .names = "num_{col}"
+  )) %>%
+  mutate(across(
+    starts_with("num_"),
+    ~ round(., 3)
+  ))
+
+# Replace original columns with rounded
+num_cols <- grep("^num_", names(final_df), value = TRUE)
+orig_cols <- sub("^num_", "", num_cols)
+final_df[orig_cols] <- final_df[num_cols]
+final_df <- final_df %>% dplyr::select(-all_of(num_cols))
+
+# Step 2: Format Delta AIC (round, add star to best model)
+min_delta <- min(final_df$`Delta AIC`)
+final_df <- final_df %>%
+  mutate(
+    `Delta AIC` = round(`Delta AIC`, 2),
+    Model = ifelse(`Delta AIC` == min_delta, paste0(Model, " *"), Model)
+  )
+
+# Step 3: Clean column names (remove trailing _estimate/_p.value, prettify)
+clean_names <- names(final_df) %>%
+  str_replace_all("_estimate", "") %>%
+  str_replace_all("_p.value", " (p)") %>%
+  str_replace_all("_", " ") %>%
+  str_to_title()
+
+colnames(final_df) <- clean_names
+
+# Step 4: Print with nicer alignment and caption
+cat(knitr::kable(final_df, format = "simple", caption = "Comparison of Negative Binomial Models\n(*) Best model based on lowest Delta AIC"))
+
+```
+
+```{r}
 # Compare AICs of all models
 aic_values <- AIC(
   nb_model_1a, nb_model_1b, nb_model_1c,
@@ -323,6 +374,16 @@ nb_offset_2c <- MASS::glm.nb(total_detections ~ trail + habitat_type + offset(lo
 
 # 3 predictor model with offset
 nb_offset_3a <- MASS::glm.nb(total_detections ~ feature_type_methodology_recoded + trail + habitat_type + offset(log(total_camera_hours)), data = placename_summary_pt_2)
+
+# AIC comparison and delta AIC calculation
+aic_offset_values <- AIC(
+  nb_offset_1a, nb_offset_1b, nb_offset_1c,
+  nb_offset_2a, nb_offset_2b, nb_offset_2c,
+  nb_offset_3a
+)
+
+# Calculate delta AIC
+aic_offset_values$delta_AIC <- aic_offset_values$AIC - min(aic_offset_values$AIC)
 
 # Model summary table for offset models
 nb_table_output <- modelsummary::modelsummary(
@@ -356,18 +417,295 @@ nb_table_output <- modelsummary::modelsummary(
 ```
 
 ```{r}
-# AIC comparison
-aic_offset_values <- AIC(
-  nb_offset_1a, nb_offset_1b, nb_offset_1c,
-  nb_offset_2a, nb_offset_2b, nb_offset_2c,
-  nb_offset_3a
-)
-
+# Display AIC comparison results
 print(aic_offset_values)
 
 best_offset_model <- rownames(aic_offset_values)[which.min(aic_offset_values$AIC)]
 cat("Best model using offset is:", best_offset_model, "\n")
 ```
+### Transposed table
+```{r}
+# Create detailed table with each predictor as a separate row
+  create_detailed_model_table <- function() {
+    detailed_data <- data.frame()
+
+    for(i in 1:length(sorted_models)) {
+      model <- sorted_models[[i]]
+      model_name <- names(sorted_models)[i]
+
+      # Get coefficient summary
+      coef_summary <- summary(model)$coefficients
+
+      # Extract model-level metrics
+      delta_aic <- sorted_delta_aic[i]
+      fitted_vals <- fitted(model)
+      observed_vals <- placename_summary_pt_2$total_detections
+      rmse <- sqrt(mean((observed_vals - fitted_vals)^2))
+
+      # Add model header row (just model name)
+      detailed_data <- rbind(detailed_data, data.frame(
+        Model_Name = model_name,
+        Predictor = model_name,
+        Estimate = "",
+        P_Value = "",
+        Delta_AIC = round(delta_aic, 2),
+        RMSE = round(rmse, 3),
+        row_type = "header"
+      ))
+
+      # Create row for each predictor
+      for(j in 1:nrow(coef_summary)) {
+        predictor_name <- rownames(coef_summary)[j]
+        p_value <- coef_summary[j, "Pr(>|z|)"]
+
+        # Add significance stars
+        stars <- case_when(
+          p_value < 0.001 ~ "***",
+          p_value < 0.01 ~ "**",
+          p_value < 0.05 ~ "*",
+          TRUE ~ ""
+        )
+
+        # Clean up predictor names
+        clean_predictor <- case_when(
+          predictor_name == "(Intercept)" ~ "Intercept (Reference)",
+          predictor_name == "feature_type_methodology_recodedLog/Boulder" ~ "Log/Boulder Feature",
+          predictor_name == "trailyes" ~ "Adjacent to Trail",
+          predictor_name == "habitat_typeGrassland" ~ "Grassland Habitat",
+          predictor_name == "habitat_typeScrub" ~ "Scrub Habitat",
+          TRUE ~ predictor_name
+        )
+
+        # Add stars to predictor name
+        predictor_with_stars <- paste0(clean_predictor, stars)
+
+        detailed_data <- rbind(detailed_data, data.frame(
+          Model_Name = model_name,
+          Predictor = predictor_with_stars,
+          Estimate = round(exp(coef_summary[j, "Estimate"]), 3),  # Exponentiated
+          P_Value = round(p_value, 4),
+          Delta_AIC = "",
+          RMSE = "",
+          row_type = "predictor"
+        ))
+      }
+    }
+
+    return(detailed_data)
+  }
+
+  # Create the detailed table
+  detailed_model_data <- create_detailed_model_table()
+
+  # Create styled gt table with source notes instead of footnotes
+  detailed_model_table <- detailed_model_data %>%
+    dplyr::select(-Model_Name, -row_type) %>%
+    gt::gt() %>%
+    gt::tab_header(
+      title = "Table 1. Detailed Negative Binomial Model Comparison",
+      subtitle = "Models ranked by performance (Delta AIC), coefficients exponentiated"
+    ) %>%
+    gt::cols_label(
+      Predictor = "Model / Predictor",
+      Estimate = "IRR",
+      P_Value = "P-Value",
+      Delta_AIC = "ΔAIC",
+      RMSE = "RMSE"
+    ) %>%
+    gt::fmt_number(
+      columns = c(Estimate, P_Value),
+      decimals = 3,
+      rows = detailed_model_data$row_type == "predictor"
+    ) %>%
+    gt::fmt_number(
+      columns = c(Delta_AIC, RMSE),
+      decimals = 2,
+      rows = detailed_model_data$row_type == "header"
+    ) %>%
+    gt::tab_style(
+      style = list(
+        gt::cell_fill(color = "#f8f9fa"),
+        gt::cell_text(weight = "bold")
+      ),
+      locations = gt::cells_column_labels()
+    ) %>%
+    gt::tab_style(
+      style = list(
+        gt::cell_fill(color = "#d1ecf1"),
+        gt::cell_text(weight = "bold")
+      ),
+      locations = gt::cells_body(rows = which(detailed_model_data$row_type == "header"))
+    ) %>%
+    gt::opt_table_font(font = "Times New Roman") %>%
+    gt::tab_source_note(
+      source_note = "Models sorted by increasing ΔAIC."
+      ) %>%
+    gt::tab_source_note(
+      source_note = "All models include log(camera hours) as offset term to control for sampling effort."
+    ) %>%
+     gt::tab_source_note(
+       source_note = "IRR = Incidence Rate Ratio (exponentiated coefficients)."
+    ) %>%
+    gt::tab_source_note(
+      source_note = "Significance codes: *** p < 0.001, ** p < 0.01, * p < 0.05"
+    ) %>%
+    gt::tab_source_note(
+      source_note = "Reference conditions: constructed hibernacula, not adjacent to trail, marsh habitat."
+    )
+
+  print(detailed_model_table)
+
+  # Save as PNG
+  detailed_model_table %>%
+    gt::gtsave(filename = here("figures", "detailed_model_comparison_table.png"))
+```
+## Top 3 Table
+```{r}
+# Model comparison blurb
+  cat("We tested seven different negative binomial model permutations to predict wildlife detections, including all possible 
+  combinations of our three main predictors: feature type (constructed hibernacula vs. logs/boulders), trail adjacency (yes/no),
+   and habitat type (marsh, grassland, scrub). The three best-performing models (within <2 ΔAIC of each other) all included 
+  feature type as a predictor, suggesting this is the most important variable for explaining wildlife detection patterns. These 
+  top models were: (1) Feature Type + Trail + Habitat Type (ΔAIC = 0), (2) Feature Type + Habitat Type (ΔAIC = 0.8), and (3) 
+  Feature Type + Trail (ΔAIC = 1.6).\n\n")
+
+  # Filter to top 3 models (ΔAIC < 2)
+  top_3_indices <- which(sorted_delta_aic < 2)
+  top_3_models <- sorted_models[top_3_indices]
+  top_3_delta_aic <- sorted_delta_aic[top_3_indices]
+
+  # Create detailed table for top 3 models only
+  create_top3_model_table <- function() {
+    detailed_data <- data.frame()
+
+    for(i in 1:length(top_3_models)) {
+      model <- top_3_models[[i]]
+      model_name <- names(top_3_models)[i]
+
+      # Get coefficient summary
+      coef_summary <- summary(model)$coefficients
+
+      # Extract model-level metrics
+      delta_aic <- top_3_delta_aic[i]
+      fitted_vals <- fitted(model)
+      observed_vals <- placename_summary_pt_2$total_detections
+      rmse <- sqrt(mean((observed_vals - fitted_vals)^2))
+
+      # Add model header row (just model name)
+      detailed_data <- rbind(detailed_data, data.frame(
+        Model_Name = model_name,
+        Predictor = model_name,
+        Estimate = "",
+        P_Value = "",
+        Delta_AIC = round(delta_aic, 2),
+        RMSE = round(rmse, 3),
+        row_type = "header"
+      ))
+
+      # Create row for each predictor
+      for(j in 1:nrow(coef_summary)) {
+        predictor_name <- rownames(coef_summary)[j]
+        p_value <- coef_summary[j, "Pr(>|z|)"]
+
+        # Add significance stars
+        stars <- case_when(
+          p_value < 0.001 ~ "***",
+          p_value < 0.01 ~ "**",
+          p_value < 0.05 ~ "*",
+          TRUE ~ ""
+        )
+
+        # Clean up predictor names
+        clean_predictor <- case_when(
+          predictor_name == "(Intercept)" ~ "Intercept (Reference)",
+          predictor_name == "feature_type_methodology_recodedLog/Boulder" ~ "Log/Boulder Feature",
+          predictor_name == "trailyes" ~ "Adjacent to Trail",
+          predictor_name == "habitat_typeGrassland" ~ "Grassland Habitat",
+          predictor_name == "habitat_typeScrub" ~ "Scrub Habitat",
+          TRUE ~ predictor_name
+        )
+
+        # Add stars to predictor name
+        predictor_with_stars <- paste0(clean_predictor, stars)
+
+        detailed_data <- rbind(detailed_data, data.frame(
+          Model_Name = model_name,
+          Predictor = predictor_with_stars,
+          Estimate = round(exp(coef_summary[j, "Estimate"]), 3),  # Exponentiated
+          P_Value = round(p_value, 4),
+          Delta_AIC = "",
+          RMSE = "",
+          row_type = "predictor"
+        ))
+      }
+    }
+
+    return(detailed_data)
+  }
+
+  # Create the top 3 models table
+  top3_model_data <- create_top3_model_table()
+
+# Create styled gt table for top 3 models
+  top3_model_table <- top3_model_data %>%
+    dplyr::select(-Model_Name, -row_type) %>%
+    gt::gt() %>%
+    gt::tab_header(
+      title = "Table 2. Top 3 Negative Binomial Models (ΔAIC < 2)",
+      subtitle = "Best-performing models all include feature type as predictor"
+    ) %>%
+    gt::cols_label(
+      Predictor = "Model / Predictor",
+      Estimate = "IRR",
+      P_Value = "P-Value",
+      Delta_AIC = "ΔAIC",
+      RMSE = "RMSE"
+    ) %>%
+    gt::fmt_number(
+      columns = c(Estimate, P_Value),
+      decimals = 3,
+      rows = top3_model_data$row_type == "predictor"
+    ) %>%
+    gt::fmt_number(
+      columns = c(Delta_AIC, RMSE),
+      decimals = 2,
+      rows = top3_model_data$row_type == "header"
+    ) %>%
+    gt::tab_style(
+      style = list(
+        gt::cell_fill(color = "#f8f9fa"),
+        gt::cell_text(weight = "bold")
+      ),
+      locations = gt::cells_column_labels()
+    ) %>%
+    gt::tab_style(
+      style = list(
+        gt::cell_fill(color = "#d4edda"),
+        gt::cell_text(weight = "bold")
+      ),
+      locations = gt::cells_body(rows = which(top3_model_data$row_type == "header"))
+    ) %>%
+    gt::opt_table_font(font = "Times New Roman") %>%
+    gt::tab_source_note(
+      source_note = "All models include log(camera hours) as offset term to control for sampling effort."
+    ) %>%
+    gt::tab_source_note(
+      source_note = "IRR = Incidence Rate Ratio (exponentiated coefficients)."
+    ) %>%
+    gt::tab_source_note(
+      source_note = "Significance codes: *** p < 0.001, ** p < 0.01, * p < 0.05"
+    ) %>%
+    gt::tab_source_note(
+      source_note = "Reference conditions: constructed hibernacula, not adjacent to trail, marsh habitat."
+    )
+
+  print(top3_model_table)
+
+  # Save as PNG
+  top3_model_table %>%
+    gt::gtsave(filename = here("figures", "top3_model_comparison_table.png"))
+```
+
 
 ## Figures
 
@@ -881,125 +1219,6 @@ map_final
 ggsave(here("figures","deployment_map_pt_2.png"), plot = map_final, width = 10, height = 6, dpi = 300, bg = "white")
 ```
 
-```{r}
-# Extract the zip file 
-unzip(here("data", "ncos_shp.zip"), exdir = here("data")) 
-# List the extracted files to see what's available 
-list.files(here("data"), pattern = "\\.shp$") 
-# Read the shapefile (replace "filename" with the actual .shp filename) 
-open_space_boundary <- st_read(here("data", "ncos_shp.shp"))
-# Transform boundary to WGS84 to match your study area
-open_space_boundary <- st_transform(open_space_boundary, crs = 4326)
-
-# Combined Map for Both Parts of the Study
-placenames_for_deployment_map <- placenames_for_deployment_map_step1 %>%
-  mutate(
-    latitude = round(latitude, 4),
-    longitude = round(longitude, 4)
-  ) %>%
-  group_by(placename, latitude, longitude, feature_type_methodology) %>%
-  summarise(
-    study_part_combined = if_else(n() > 1, "both", as.character(min(study_part))),
-    .groups = "drop"
-  )
-
-
-# Convert site_summary to sf object
-map_site_sf <- st_as_sf(placenames_for_deployment_map, coords = c("longitude", "latitude"), crs = 4326)
-
-# Get bbox from shapefile and expand
-bbox_expanded <- st_bbox(open_space_boundary)
-buffer_val <- 0  # tweak this until boundary fits comfortably
-bbox_expanded <- bbox_expanded + c(-buffer_val, -buffer_val, buffer_val, buffer_val)
-
-# Convert to sf polygon for tile download
-bbox_sf <- st_as_sfc(bbox_expanded)
-
-
-# Download satellite tiles using expanded bbox
-map_basemap <- get_tiles(bbox_sf, provider = "Esri.WorldImagery", zoom = 18)
-
-# Convert raster to data.frame for ggplot
-map_rgb_df <- as.data.frame(map_basemap, xy = TRUE)
-colnames(map_rgb_df) <- c("x", "y", "red", "green", "blue")
-map_rgb_df$hex <- rgb(map_rgb_df$red, map_rgb_df$green, map_rgb_df$blue, maxColorValue = 255)
-
-# Main satellite deployment map - now fits the full open space boundary
-# Main satellite deployment map - now fits the full open space boundary
-map_main <- ggplot() +
-  geom_raster(data = map_rgb_df, aes(x = x, y = y, fill = hex)) +
-  scale_fill_identity() +
-  
-  # Boundary with legend
-  geom_sf(data = open_space_boundary, 
-          aes(linetype = "NCOS Boundary"),  # <- mapped aesthetic
-          color = "yellow", fill = NA, linewidth = 2) +
-  
-  geom_sf(data = map_site_sf, aes(color = feature_type_methodology, shape = study_part_combined),
-          size = 4, alpha = 0.9, stroke = 0.5) +
-  scale_color_manual(values = feature_colors, name = "Feature Type") +
-# Relabel study parts
-  scale_shape_manual(
-    name = "Study Part",
-    values = study_part_shapes,
-    labels = c("1" = "Winter", "2" = "Spring", "both" = "Both")
-  ) +
-  scale_linetype_manual(name = "", values = c("NCOS Boundary" = "solid")) +  # <- legend entry
-  
-  coord_sf(expand = TRUE) +
-  annotation_scale(location = "bl", pad_x = unit(0.45, "in"), pad_y = unit(0.3, "in"),
-                   width_hint = 0.25, text_col = "white") +
-  annotation_north_arrow(location = "br", which_north = "true",
-                         pad_x = unit(0.35, "in"), pad_y = unit(0.23, "in"),
-                         style = north_arrow_fancy_orienteering) +
-  theme_minimal(base_size = 12) +
-  theme(
-    panel.grid = element_blank(),
-    legend.position = "bottom",
-    axis.title = element_blank(),
-    axis.text = element_blank(),
-    axis.ticks = element_blank(),
-    legend.box = "horizontal"
-  ) +
-  guides(
-    color = guide_legend(override.aes = list(size = 4)),
-    shape = guide_legend(override.aes = list(size = 4)),
-    linetype = guide_legend(override.aes = list(color = "yellow", linewidth = 2)) # <- styled legend
-  )
-
-
-
-# Calculate study area centroid
-map_centroid_coords <- map_site_sf %>%
-  st_coordinates() %>%
-  as.data.frame() %>%
-  summarise(longitude = mean(X), latitude = mean(Y))
-
-# Overview map of CA with study area location
-map_CA <- map("state", plot = FALSE, fill = TRUE) %>%
-  st_as_sf() %>%
-  filter(ID == "california")
-
-map_overview <- ggplot() +
-  geom_sf(data = map_CA, fill = "gray90", color = "gray60", size = 0.3) +
-  geom_point(data = map_centroid_coords, aes(x = longitude, y = latitude), 
-             color = "red", size = 3, shape = 15) +
-  theme_void() +
-  theme(
-    panel.border = element_rect(color = "black", fill = NA, size = 0.5),
-    plot.background = element_rect(fill = "white", color = NA)
-  )
-
-# Combine maps with proper positioning
-map_final <- ggdraw() +
-  draw_plot(map_main) +
-  draw_plot(map_overview, x = 0.72, y = 0.622, width = 0.3, height = 0.3)
-
-map_final
-
-ggsave(here("figures","deployment_map_combined.png"), plot = map_final, width = 10, height = 6, dpi = 300, bg = "white")
-```
-
 # Part 1:
 
 ## Load Data
@@ -1317,6 +1536,139 @@ p4
 ggsave(here("figures","species_residency_status_by_feature_type_pt_1_and_2.png"), 
        plot = p4, 
        width = 12, height = 6, dpi = 300, bg = "white")
+```
+
+## Combined deployment map
+```{r}
+# Extract the zip file 
+unzip(here("data", "ncos_shp.zip"), exdir = here("data")) 
+# List the extracted files to see what's available 
+list.files(here("data"), pattern = "\\.shp$") 
+# Read the shapefile (replace "filename" with the actual .shp filename) 
+open_space_boundary <- st_read(here("data", "ncos_shp.shp"))
+# Transform boundary to WGS84 to match your study area
+open_space_boundary <- st_transform(open_space_boundary, crs = 4326)
+
+# Create combined dataset from both study parts
+placenames_for_deployment_map_step1 <- bind_rows(
+    placename_summary_pt_1 %>%
+      group_by(placename, latitude, longitude, feature_type_methodology, habitat_type) %>%
+      summarise(study_part = first(study_part), .groups = "drop"),
+    placename_summary_pt_2 %>%
+      group_by(placename, latitude, longitude, feature_type_methodology, habitat_type) %>%
+      summarise(study_part = first(study_part), .groups = "drop")
+  )
+
+
+# Combined Map for Both Parts of the Study
+placenames_for_deployment_map <- placenames_for_deployment_map_step1 %>%
+  mutate(
+    latitude = round(latitude, 4),
+    longitude = round(longitude, 4)
+  ) %>%
+  group_by(placename, latitude, longitude, feature_type_methodology) %>%
+  summarise(
+    study_part_combined = if_else(n() > 1, "both", as.character(min(study_part))),
+    .groups = "drop"
+  )
+
+
+# Convert site_summary to sf object
+map_site_sf <- st_as_sf(placenames_for_deployment_map, coords = c("longitude", "latitude"), crs = 4326)
+
+# Get bbox from shapefile and expand
+bbox_expanded <- st_bbox(open_space_boundary)
+buffer_val <- 0  # tweak this until boundary fits comfortably
+bbox_expanded <- bbox_expanded + c(-buffer_val, -buffer_val, buffer_val, buffer_val)
+
+# Convert to sf polygon for tile download
+bbox_sf <- st_as_sfc(bbox_expanded)
+
+
+# Download satellite tiles using expanded bbox
+map_basemap <- get_tiles(bbox_sf, provider = "Esri.WorldImagery", zoom = 18)
+
+# Convert raster to data.frame for ggplot
+map_rgb_df <- as.data.frame(map_basemap, xy = TRUE)
+colnames(map_rgb_df) <- c("x", "y", "red", "green", "blue")
+map_rgb_df$hex <- rgb(map_rgb_df$red, map_rgb_df$green, map_rgb_df$blue, maxColorValue = 255)
+
+  # Define shapes for study parts
+  study_part_shapes <- c("1" = 16, "2" = 17, "both" = 15)
+
+  # Main satellite deployment map - now fits the full open space boundary
+map_main <- ggplot() +
+  geom_raster(data = map_rgb_df, aes(x = x, y = y, fill = hex)) +
+  scale_fill_identity() +
+  
+  # Boundary with legend
+  geom_sf(data = open_space_boundary, 
+          aes(linetype = "NCOS Boundary"),  # <- mapped aesthetic
+          color = "yellow", fill = NA, linewidth = 2) +
+  
+  geom_sf(data = map_site_sf, aes(color = feature_type_methodology, shape = study_part_combined),
+          size = 4, alpha = 0.9, stroke = 0.5) +
+  scale_color_manual(values = feature_colors, name = "Feature Type") +
+# Relabel study parts
+  scale_shape_manual(
+    name = "Study Part",
+    values = study_part_shapes,
+    labels = c("1" = "Winter", "2" = "Spring", "both" = "Both")
+  ) +
+  scale_linetype_manual(name = "", values = c("NCOS Boundary" = "solid")) +  # <- legend entry
+  
+  coord_sf(expand = TRUE) +
+  annotation_scale(location = "bl", pad_x = unit(0.45, "in"), pad_y = unit(0.3, "in"),
+                   width_hint = 0.25, text_col = "white") +
+  annotation_north_arrow(location = "br", which_north = "true",
+                         pad_x = unit(0.35, "in"), pad_y = unit(0.23, "in"),
+                         style = north_arrow_fancy_orienteering) +
+  theme_minimal(base_size = 12) +
+  theme(
+    panel.grid = element_blank(),
+    legend.position = "bottom",
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    legend.box = "horizontal"
+  ) +
+  guides(
+    color = guide_legend(override.aes = list(size = 4)),
+    shape = guide_legend(override.aes = list(size = 4)),
+    linetype = guide_legend(override.aes = list(color = "yellow", linewidth = 2)) # <- styled legend
+  )
+
+
+
+# Calculate study area centroid
+map_centroid_coords <- map_site_sf %>%
+  st_coordinates() %>%
+  as.data.frame() %>%
+  summarise(longitude = mean(X), latitude = mean(Y))
+
+# Overview map of CA with study area location
+map_CA <- map("state", plot = FALSE, fill = TRUE) %>%
+  st_as_sf() %>%
+  filter(ID == "california")
+
+map_overview <- ggplot() +
+  geom_sf(data = map_CA, fill = "gray90", color = "gray60", size = 0.3) +
+  geom_point(data = map_centroid_coords, aes(x = longitude, y = latitude), 
+             color = "red", size = 3, shape = 15) +
+  theme_void() +
+  theme(
+    panel.border = element_rect(color = "black", fill = NA, size = 0.5),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
+
+# Combine maps with proper positioning
+map_final <- ggdraw() +
+  draw_plot(map_main) +
+  draw_plot(map_overview, x = 0.72, y = 0.622, width = 0.3, height = 0.3)
+
+map_final
+
+ggsave(here("figures","deployment_map_combined.png"), plot = map_final, width = 10, height = 6, dpi = 300, bg = "white")
 ```
 
 ## # of Entrances by Feature Type
@@ -1789,10 +2141,6 @@ drop_feats <- present_feats %>%
   dplyr::mutate(prefix = paste0("__", feature)) %>%
   dplyr::pull(prefix)
 
-# filter col_order so we remove those
-col_order <- col_order[!vapply(drop_feats, function(df) grepl(df, col_order), logical(length(col_order)))]
-
-
 # 3) Order columns: Part 1 (Hib, Bld, Log, Total) then Part 2 (same order)
 col_order <- c(
   # Part 1
@@ -1803,6 +2151,10 @@ col_order <- c(
   "part_2__detections_log","part_2__pct_log","part_2__rate_log",
   "part_2__detections_tot","part_2__pct_tot","part_2__rate_tot"
 )
+
+# filter col_order so we remove those
+col_order <- col_order[!vapply(drop_feats, function(df) grepl(df, col_order), logical(length(col_order)))]
+
 
 # some columns may be missing if a feature type is absent in a part; keep only those that exist
 col_order <- col_order[col_order %in% names(metrics_wide)]
