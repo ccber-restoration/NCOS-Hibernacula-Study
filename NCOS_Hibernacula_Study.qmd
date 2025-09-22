@@ -295,53 +295,53 @@ modelsummary::modelsummary(
 )
 
 ```
-```{r}
-library(dplyr)
-library(stringr)
-library(knitr)
-library(tibble)
+# ```{r}
+# library(dplyr)
+# library(stringr)
+# library(knitr)
+# library(tibble)
+# 
+# # After computing final_df (from previous code), do:
+# 
+# # Step 1: Round numeric columns (except Model and Delta AIC)
+# final_df <- final_df %>%
+#   mutate(across(
+#     -c(Model, `Delta AIC`),
+#     ~ as.numeric(.),
+#     .names = "num_{col}"
+#   )) %>%
+#   mutate(across(
+#     starts_with("num_"),
+#     ~ round(., 3)
+#   ))
+# 
+# # Replace original columns with rounded
+# num_cols <- grep("^num_", names(final_df), value = TRUE)
+# orig_cols <- sub("^num_", "", num_cols)
+# final_df[orig_cols] <- final_df[num_cols]
+# final_df <- final_df %>% dplyr::select(-all_of(num_cols))
+# 
+# # Step 2: Format Delta AIC (round, add star to best model)
+# min_delta <- min(final_df$`Delta AIC`)
+# final_df <- final_df %>%
+#   mutate(
+#     `Delta AIC` = round(`Delta AIC`, 2),
+#     Model = ifelse(`Delta AIC` == min_delta, paste0(Model, " *"), Model)
+#   )
+# 
+# # Step 3: Clean column names (remove trailing _estimate/_p.value, prettify)
+# clean_names <- names(final_df) %>%
+#   str_replace_all("_estimate", "") %>%
+#   str_replace_all("_p.value", " (p)") %>%
+#   str_replace_all("_", " ") %>%
+#   str_to_title()
+# 
+# colnames(final_df) <- clean_names
+# 
+# # Step 4: Print with nicer alignment and caption
+# cat(knitr::kable(final_df, format = "simple", caption = "Comparison of Negative Binomial Models\n(*) Best model based on lowest Delta AIC"))
 
-# After computing final_df (from previous code), do:
-
-# Step 1: Round numeric columns (except Model and Delta AIC)
-final_df <- final_df %>%
-  mutate(across(
-    -c(Model, `Delta AIC`),
-    ~ as.numeric(.),
-    .names = "num_{col}"
-  )) %>%
-  mutate(across(
-    starts_with("num_"),
-    ~ round(., 3)
-  ))
-
-# Replace original columns with rounded
-num_cols <- grep("^num_", names(final_df), value = TRUE)
-orig_cols <- sub("^num_", "", num_cols)
-final_df[orig_cols] <- final_df[num_cols]
-final_df <- final_df %>% dplyr::select(-all_of(num_cols))
-
-# Step 2: Format Delta AIC (round, add star to best model)
-min_delta <- min(final_df$`Delta AIC`)
-final_df <- final_df %>%
-  mutate(
-    `Delta AIC` = round(`Delta AIC`, 2),
-    Model = ifelse(`Delta AIC` == min_delta, paste0(Model, " *"), Model)
-  )
-
-# Step 3: Clean column names (remove trailing _estimate/_p.value, prettify)
-clean_names <- names(final_df) %>%
-  str_replace_all("_estimate", "") %>%
-  str_replace_all("_p.value", " (p)") %>%
-  str_replace_all("_", " ") %>%
-  str_to_title()
-
-colnames(final_df) <- clean_names
-
-# Step 4: Print with nicer alignment and caption
-cat(knitr::kable(final_df, format = "simple", caption = "Comparison of Negative Binomial Models\n(*) Best model based on lowest Delta AIC"))
-
-```
+<!-- ``` -->
 
 ```{r}
 # Compare AICs of all models
@@ -384,6 +384,22 @@ aic_offset_values <- AIC(
 
 # Calculate delta AIC
 aic_offset_values$delta_AIC <- aic_offset_values$AIC - min(aic_offset_values$AIC)
+
+# Create model list with clean names and sort by AIC performance
+  all_models <- list(
+    "Feature Type" = nb_offset_1a,
+    "Trail" = nb_offset_1b,
+    "Habitat Type" = nb_offset_1c,
+    "Feature Type + Trail" = nb_offset_2a,
+    "Feature Type + Habitat Type" = nb_offset_2b,
+    "Trail + Habitat Type" = nb_offset_2c,
+    "Feature Type + Trail + Habitat Type" = nb_offset_3a
+  )
+
+  # Sort models by delta AIC (best to worst)
+  model_order <- order(aic_offset_values$delta_AIC)
+  sorted_models <- all_models[model_order]
+  sorted_delta_aic <- aic_offset_values$delta_AIC[model_order]
 
 # Model summary table for offset models
 nb_table_output <- modelsummary::modelsummary(
