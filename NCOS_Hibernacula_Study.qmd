@@ -295,7 +295,7 @@ modelsummary::modelsummary(
 )
 
 ```
-# ```{r}
+```{r}
 # library(dplyr)
 # library(stringr)
 # library(knitr)
@@ -340,8 +340,7 @@ modelsummary::modelsummary(
 # 
 # # Step 4: Print with nicer alignment and caption
 # cat(knitr::kable(final_df, format = "simple", caption = "Comparison of Negative Binomial Models\n(*) Best model based on lowest Delta AIC"))
-
-<!-- ``` -->
+```
 
 ```{r}
 # Compare AICs of all models
@@ -884,19 +883,25 @@ p2 = ggplot(detections_by_habitat_species_pt_2,
     x = "Habitat Type",
     y = "Species Detections per Camera Day",
     fill = "Species",
-    title = "Species Detection Rate per Camera Day by Habitat"
+    title = ""
   ) +
   scale_fill_manual(values = species_palette_pt_2) +
-  theme_minimal(base_family = "sans") +
+  scale_y_continuous(breaks = seq(0, 10, by = 2)) +  theme_minimal(base_family = "sans") +
   theme(
     plot.title = element_text(size = 14, face = "bold"),
     panel.grid.major.x = element_blank()
   )
+p2 <- p2 + theme_cowplot() +
+  theme(
+    legend.text = element_text(size = 11),
+    axis.title = element_text(size = 14),
+    axis.text = element_text(size = 12)
+  )
 
 # Save the plot as a PNG
 ggsave(here("figures","habitat_type_species_detection_rates_pt_2.png"), plot = p2, width = 8, height = 6, dpi = 300, bg = "white")
-
 p2
+
 ```
 
 ### Hourly Species Detections by Feature Type
@@ -1485,7 +1490,7 @@ species_hourly_presence_by_feature_pt_1_and_2 <- species_hourly_presence_by_feat
 # Step 2: Add 'Other' color to palette
 extended_palette <- species_palette_pt_2
 if (!"Other" %in% names(extended_palette)) {
-  extended_palette["Other"] <- "gray50"
+  extended_palette["Other"] <- "#a6cee3"
 }
 
 extended_palette <- extended_palette[species_levels]
@@ -1540,14 +1545,19 @@ plots <- lapply(seq_along(feature_types), function(i) {
 
 # 7. Display all plots side by side
 p4 <- wrap_plots(plots, guides = "collect") &
+  theme_minimal(base_size = 16) &  # bigger text everywhere
   theme(
+    axis.text.x = element_text(size = 18, angle = 0, vjust = 0.5),
+    axis.text.y = element_text(size = 16),
+    axis.title.x = element_text(size = 18, face = "bold"),
+    axis.title.y = element_text(size = 18, face = "bold"),
+    plot.title = element_text(size = 20, face = "bold", hjust = 0.5),
     legend.position = "bottom",
     legend.box = "horizontal",
-    legend.title = element_text(size = 10),
-    legend.text = element_text(size = 9)
+    legend.title = element_text(size = 16),
+    legend.text = element_text(size = 14)
   ) &
   guides(fill = guide_legend(nrow = 1, byrow = TRUE))
-
 p4
 ggsave(here("figures","species_residency_status_by_feature_type_pt_1_and_2.png"), 
        plot = p4, 
@@ -2232,7 +2242,7 @@ feature_header <- c(" " = 1, build_feature_spans(1), build_feature_spans(2))
 
 n_part1 <- sum(grepl("^part_1__", col_keep))
 n_part2 <- sum(grepl("^part_2__", col_keep))
-top_header <- c(" " = 1, if (n_part1 > 0) c("Part 1" = n_part1), if (n_part2 > 0) c("Part 2" = n_part2))
+top_header <- c(" " = 1, if (n_part1 > 0) c("Winter" = n_part1), if (n_part2 > 0) c("Spring" = n_part2))
 
 # --- render: leaf labels via col.names; only TWO header rows above ---
 t1_hourly <- display_tbl %>%
@@ -2254,6 +2264,9 @@ save_kable(t1_hourly, here("misc","species_table_hourly_pt_1_and_2_separated.htm
 webshot(here("misc","species_table_hourly_pt_1_and_2_separated.html"),
         here("figures","species_table_hourly_pt_1_and_2_separated2.png"),
         zoom = 2, vwidth = 1800)
+
+readr::write_csv(display_tbl, here("misc","species_table_hourly_pt_1_and_2_separated.csv"))
+
 ```
 
 
