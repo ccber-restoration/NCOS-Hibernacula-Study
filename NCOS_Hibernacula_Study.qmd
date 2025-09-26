@@ -1266,6 +1266,7 @@ clean_pt_1_obs <- clean_pt_1_obs |>
       str_replace_all("Says Phoebe", "Say's Phoebe") |>
       str_replace_all("Coopers Hawk", "Cooper's Hawk") |>
       str_replace_all("Hermit thrush", "Hermit Thrush") |>
+      str_replace_all("Spotted Skunk", "Western Spotted Skunk") |>
       str_replace_all("Western Skink", "Western skink") |>
       str_replace_all("Mouse", "North American Deermouse") |>
       str_replace_all("Western Fence Lizard", "Western fence lizard") 
@@ -1948,12 +1949,43 @@ species_final_hourly <- species_final_hourly %>%
     rate_per_cam_day_log = count_observed_at_log / camera_days_vec_hourly["Log"]
   )
 
+species_final_hourly <- species_final_hourly %>%
+  left_join(
+    clean_pt_2_seq_dep_lumped %>%
+      dplyr::select(common_name, genus_species, class_grouped) %>%
+      distinct(),   # in case there are duplicates
+    by = "common_name"
+  )
+
+# Then manually patch the missing ones
+species_final_hourly <- species_final_hourly %>%
+  mutate(
+    genus_species = case_when(
+      common_name == "Western Meadowlark"    ~ "Sturnella neglecta",
+      common_name == "American Pipit"        ~ "Anthus rubescens",
+      common_name == "Wren"                  ~ "Troglodytes spp.",
+      common_name == "Grey Fox"              ~ "Urocyon cinereoargenteus",
+      common_name == "Western Spotted Skunk"         ~ "Spilogale leucoparia",
+      common_name == "California Towhee"     ~ "Melozone crissalis",
+      common_name == "Common Garter Snake"   ~ "Thamnophis sirtalis",
+      common_name == "Cooper's Hawk"         ~ "Astur cooperii",
+      TRUE ~ genus_species   # keep existing values
+    ),
+    class_grouped = case_when(
+      common_name %in% c("Western Meadowlark", "American Pipit", "Wren", 
+                         "California Towhee", "Cooper's Hawk") ~ "Birds",
+      common_name %in% c("Grey Fox", "Spotted Skunk") ~ "Mammals",
+      common_name == "Common Garter Snake" ~ "Reptiles",
+      TRUE ~ class_grouped   # keep existing values
+    )
+  )
+
 # Format final table
 t1_hourly <- species_final_hourly %>%
   dplyr::select(
-  #  'Class' = class,
+    'Class' = class_grouped,
     'Common Name' = common_name,
-  #  'Scientific Name' = genus_species,
+    'Scientific Name' = genus_species,
     'Detections' = count_observed_at_constructed_hibernacula,
     '% Visited' = percent_hibernacula_visited,
     'Per Cam.-Day' = rate_per_cam_day_hibernacula,
@@ -1986,7 +2018,7 @@ t1_hourly <- species_final_hourly %>%
     position = "left",
     bootstrap_options = c("striped", "hover", "condensed")
   ) %>%
-  add_header_above(c(" " = 1, "Constructed Hibernacula" = 3, "Boulders" = 3, "Logs" = 3, "Total" = 3))
+  add_header_above(c(" " = 3, "Constructed Hibernacula" = 3, "Boulders" = 3, "Logs" = 3, "Total" = 3))
 
 # Save as HTML and PNG
 save_kable(t1_hourly, here("misc","species_table_hourly_pt_1_and_2_combined.html"))
