@@ -294,6 +294,7 @@ modelsummary::modelsummary(
   note = "Significance codes: '***' p < 0.001, '**' p < 0.01, '*' p < 0.05"
 )
 
+
 ```
 ```{r}
 # library(dplyr)
@@ -438,6 +439,7 @@ print(aic_offset_values)
 best_offset_model <- rownames(aic_offset_values)[which.min(aic_offset_values$AIC)]
 cat("Best model using offset is:", best_offset_model, "\n")
 ```
+## Tables
 ### Transposed table
 ```{r}
 # Create detailed table with each predictor as a separate row
@@ -574,7 +576,7 @@ cat("Best model using offset is:", best_offset_model, "\n")
   detailed_model_table %>%
     gt::gtsave(filename = here("figures", "detailed_model_comparison_table.png"))
 ```
-## Top 3 Table
+### Top 3 Table
 ```{r}
 # Model comparison blurb
   cat("We tested seven different negative binomial model permutations to predict wildlife detections, including all possible 
@@ -874,19 +876,21 @@ detections_by_habitat_species_pt_2$common_name_lumped <- factor(detections_by_ha
 ))
 
 ##stacked bar chart
-p2 = ggplot(detections_by_habitat_species_pt_2, 
-       aes(x = habitat_type, 
-           y = species_detections_per_camera_day, 
+p2 = ggplot(detections_by_habitat_species_pt_2 %>%
+              filter(common_name_lumped != "Other (Reptiles)"),
+       aes(x = habitat_type,
+           y = species_detections_per_camera_day,
            fill = common_name_lumped)) +
   geom_bar(stat = "identity") +
   labs(
     x = "Habitat Type",
-    y = "Species Detections per Camera Day",
+    y = "Detections per Camera Day",
     fill = "Species",
     title = ""
   ) +
   scale_fill_manual(values = species_palette_pt_2) +
-  scale_y_continuous(breaks = seq(0, 10, by = 2)) +  theme_minimal(base_family = "sans") +
+  scale_y_continuous(breaks = seq(0, 10, by = 2), expand = expansion(mult = c(0, 0.05))) +
+  theme_minimal(base_family = "sans") +
   theme(
     plot.title = element_text(size = 14, face = "bold"),
     panel.grid.major.x = element_blank()
@@ -1498,12 +1502,12 @@ extended_palette <- extended_palette[species_levels]
 
 plots <- lapply(seq_along(feature_types), function(i) {
   ft <- feature_types[i]
-  
+
   p <- ggplot(
     species_hourly_presence_by_feature_pt_1_and_2 %>% filter(feature_type_methodology == ft),
     aes(x = residency_status, y = detections_per_camera_day)
   ) +
-    geom_jitter(aes(fill = species_fill), color = "black", shape = 21, width = 0.25, alpha = .85, size = 5, show.legend = TRUE) +
+    geom_jitter(aes(fill = species_fill, shape = species_fill), color = "black", width = 0.25, alpha = .85, size = 5, show.legend = TRUE) +
     geom_errorbar(
       data = summary_stats_species_hourly_presence_by_feature_pt_1_and_2 %>% filter(feature_type_methodology == ft),
       aes(y = mean, ymin = lower, ymax = upper),
@@ -1512,10 +1516,11 @@ plots <- lapply(seq_along(feature_types), function(i) {
     geom_point(
       data = summary_stats_species_hourly_presence_by_feature_pt_1_and_2 %>% filter(feature_type_methodology == ft),
       aes(y = mean),
-      shape = 23, size = 5,
-      fill = "black", color = "black", stroke = 1.2
+      shape = 9, size = 5,
+      fill = "white", color = "black", stroke = 1.2
     ) +
-    scale_fill_manual(values = extended_palette, name="Species")+
+    scale_fill_manual(values = extended_palette, name="Species") +
+    scale_shape_manual(values = c(21, 22, 23, 24, 25), name="Species") +
     scale_y_continuous(limits = c(0, max_y)) +
     labs(
       title = paste(ft)
@@ -1628,21 +1633,23 @@ map_main <- ggplot() +
   geom_raster(data = map_rgb_df, aes(x = x, y = y, fill = hex)) +
   scale_fill_identity() +
   
-  # Boundary with legend
-  geom_sf(data = open_space_boundary, 
-          aes(linetype = "NCOS Boundary"),  # <- mapped aesthetic
+  geom_sf(data = open_space_boundary, aes(linetype = "NCOS Boundary"),
           color = "yellow", fill = NA, linewidth = 2) +
   
   geom_sf(data = map_site_sf, aes(color = feature_type_methodology, shape = study_part_combined),
           size = 4, alpha = 0.9, stroke = 0.5) +
+  
+  # Scales
   scale_color_manual(values = feature_colors, name = "Feature Type") +
-# Relabel study parts
   scale_shape_manual(
     name = "Study Part",
     values = study_part_shapes,
     labels = c("1" = "Winter", "2" = "Spring", "both" = "Both")
   ) +
-  scale_linetype_manual(name = "", values = c("NCOS Boundary" = "solid")) +  # <- legend entry
+  scale_linetype_manual(
+    name = "",
+    values = c("NCOS Boundary" = "solid")
+  ) +
   
   coord_sf(expand = TRUE) +
   annotation_scale(location = "bl", pad_x = unit(0.45, "in"), pad_y = unit(0.3, "in"),
@@ -1650,22 +1657,27 @@ map_main <- ggplot() +
   annotation_north_arrow(location = "br", which_north = "true",
                          pad_x = unit(0.35, "in"), pad_y = unit(0.23, "in"),
                          style = north_arrow_fancy_orienteering) +
+  
   theme_minimal(base_size = 12) +
   theme(
-    panel.grid = element_blank(),
-    legend.position = "bottom",
-    axis.title = element_blank(),
-    axis.text = element_blank(),
-    axis.ticks = element_blank(),
-    legend.box = "horizontal"
-  ) +
+  panel.grid = element_blank(),
+  legend.position = "bottom",
+  legend.box = "horizontal",
+  legend.box.just = "center",   # <-- centers all legends vertically
+  legend.box.margin = margin(t = 0, r = 0, b = 0, l = 0),  # optional, remove extra padding
+  axis.title = element_blank(),
+  axis.text = element_blank(),
+  axis.ticks = element_blank(),
+  legend.title = element_text(size = 16, face = "bold"),
+  legend.text = element_text(size = 14)
+) +
+  
+  # Force legend order: NCOS Boundary first
   guides(
-    color = guide_legend(override.aes = list(size = 4)),
-    shape = guide_legend(override.aes = list(size = 4)),
-    linetype = guide_legend(override.aes = list(color = "yellow", linewidth = 2)) # <- styled legend
+       linetype = guide_legend(order = 1, override.aes = list(color = "yellow", linewidth = 2), ncol = 1),
+    color = guide_legend(order = 2, override.aes = list(size = 4), ncol = 1),
+    shape = guide_legend(order = 3, override.aes = list(size = 4), ncol = 1)
   )
-
-
 
 # Calculate study area centroid
 map_centroid_coords <- map_site_sf %>%
@@ -2146,6 +2158,31 @@ species_final_hourly <- species_combined_hourly %>%
     rate_per_cam_day_all = safe_div(detections_total, total_cam_days_all)
   )
 
+# ---- Add scientific names to species_final_hourly ----
+species_final_hourly <- species_final_hourly %>%
+  left_join(
+    clean_pt_2_seq_dep_lumped %>%
+      dplyr::select(common_name, genus_species, class_grouped) %>%
+      distinct(),
+    by = "common_name"
+  ) %>%
+  # Manually patch missing ones (Part 1 species and incomplete taxonomy)
+  mutate(
+    genus_species = case_when(
+      common_name == "Western Meadowlark"    ~ "Sturnella neglecta",
+      common_name == "American Pipit"        ~ "Anthus rubescens",
+      common_name == "Wren"                  ~ "Troglodytidae",  # Family name
+      common_name == "Grey Fox"              ~ "Urocyon cinereoargenteus",
+      common_name == "Western Spotted Skunk" ~ "Spilogale gracilis",
+      common_name == "California Towhee"     ~ "Melozone crissalis",
+      common_name == "Common Garter Snake"   ~ "Thamnophis sirtalis",
+      common_name == "Cooper's Hawk"         ~ "Accipiter cooperii",
+      TRUE ~ genus_species
+    ),
+    # Update Wren common name to "Wren sp."
+    common_name = ifelse(common_name == "Wren", "Wren sp.", common_name)
+  )
+
 # ---- Build wide table with Part headers (no Study Part column) ----
 # Start from species_final_hourly created above
 
@@ -2230,26 +2267,34 @@ display_tbl <- metrics_wide %>%
     ),
     by = "common_name"
   ) %>%
-  dplyr::select(common_name, all_of(col_keep), total_all) %>%
+  # Join scientific names
+  dplyr::left_join(
+    species_final_hourly %>%
+      dplyr::select(common_name, genus_species) %>%
+      dplyr::distinct(),
+    by = "common_name"
+  ) %>%
+  dplyr::select(common_name, genus_species, all_of(col_keep), total_all) %>%
   dplyr::arrange(dplyr::desc(total_all), common_name) %>%
   dplyr::select(-total_all) %>%
   dplyr::mutate(
     dplyr::across(tidyselect::matches("__pct_"),
-                  ~ ifelse(is.na(.x), NA, paste0(round(.x, 2), "%"))),
+                  ~ round(.x, 2)),  # Remove paste0(..., "%")
     dplyr::across(tidyselect::matches("__rate_"), ~ round(.x, 3))
   ) %>%
-  dplyr::rename(`Common Name` = common_name)
+  dplyr::rename(`Common Name` = common_name, `Scientific Name` = genus_species)
 
 # --- build leaf (bottom) labels to pass via kable(col.names=...) ---
 metric_label_map <- c(
-  detections_hib = "Hrs. Detected",  pct_hib = "% Visited",  rate_hib = "Per Cam.-Day",
-  detections_bld = "Hrs. Detected",  pct_bld = "% Visited",  rate_bld = "Per Cam.-Day",
-  detections_log = "Hrs. Detected",  pct_log = "% Visited",  rate_log = "Per Cam.-Day",
-  detections_tot = "Hrs. Detected",  pct_tot = "% Visited",  rate_tot = "Per Cam.-Day"
+  detections_hib = "Hrs",  pct_hib = "%",  rate_hib = "Rate",
+  detections_bld = "Hrs",  pct_bld = "%",  rate_bld = "Rate",
+  detections_log = "Hrs",  pct_log = "%",  rate_log = "Rate",
+  detections_tot = "Hrs",  pct_tot = "%",  rate_tot = "Rate"
 )
 
 leaf_labels <- c(
   "Common Name",
+  "Scientific Name",
   vapply(col_keep, function(x) {
     key <- sub("^part_\\d+__", "", x)                 # e.g., "pct_hib"
     lbl <- unname(metric_label_map[key])
@@ -2270,26 +2315,27 @@ build_feature_spans <- function(part) {
   out
 }
 
-feature_header <- c(" " = 1, build_feature_spans(1), build_feature_spans(2))
+feature_header <- c(" " = 2, build_feature_spans(1), build_feature_spans(2))  # 2 for Common Name + Scientific Name
 
 n_part1 <- sum(grepl("^part_1__", col_keep))
 n_part2 <- sum(grepl("^part_2__", col_keep))
-top_header <- c(" " = 1, if (n_part1 > 0) c("Winter" = n_part1), if (n_part2 > 0) c("Spring" = n_part2))
+top_header <- c(" " = 2, if (n_part1 > 0) c("Winter" = n_part1), if (n_part2 > 0) c("Spring" = n_part2))  # 2 for Common Name + Scientific Name
 
 # --- render: leaf labels via col.names; only TWO header rows above ---
 t1_hourly <- display_tbl %>%
   kable(
-    caption = "Unique Hours Present and Percent Feature Visited by Feature Type (Hourly Presence)",
+    caption = "Species List from Hourly Presence Data (Parts 1 and 2 Separated). Scientific names follow Wildlife Insights taxonomy (https://www.wildlifeinsights.org/get-started/taxonomy). Hrs = Hours detected; % = Percent of features visited (percentage values); Rate = Detections per camera-day.",
     col.names = leaf_labels,
-    align = c("l", rep("c", ncol(display_tbl) - 1)),
+    align = c("l", "l", rep("c", ncol(display_tbl) - 2)),  # Left-align first two cols (common + scientific), center rest
     digits = 3,
     escape = FALSE
   ) %>%
   kable_styling(full_width = FALSE, position = "left",
-                bootstrap_options = c("striped", "hover", "condensed")) %>%
+                bootstrap_options = c("striped", "hover", "condensed"),
+                font_size = 10) %>%
   add_header_above(feature_header) %>%
-  add_header_above(top_header) |> 
-  column_spec((1 + n_part1), border_right = TRUE)
+  add_header_above(top_header) |>
+  column_spec((2 + n_part1), border_right = TRUE)  # Adjust border: now 2 columns before Part 2
 
 # Save as HTML and PNG
 save_kable(t1_hourly, here("misc","species_table_hourly_pt_1_and_2_separated.html"))
