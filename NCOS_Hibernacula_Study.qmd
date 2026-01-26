@@ -1168,10 +1168,11 @@ ncos_habitats <- ncos_habitats |>
   group_by(habitat_simple) |>
   summarise(geometry = st_union(geometry), .groups = "drop")
 
-# Load NCOS boundary
+# Load NCOS boundary and convert to lines (so clipping doesn't create false polygon edges)
 ncos_boundary <- st_read(here("data", "ncos_shp", "ncos_shp.shp"))
 ncos_boundary <- st_make_valid(ncos_boundary)
 ncos_boundary <- st_transform(ncos_boundary, crs = st_crs(map_site_sf))
+ncos_boundary_lines <- st_cast(ncos_boundary, "MULTILINESTRING")
 
 # Get bounding box and expand slightly
 bbox <- st_bbox(map_site_sf)
@@ -1187,9 +1188,9 @@ bbox_expanded <- c(
 # Download satellite tiles (Esri)
 map_basemap <- get_tiles(map_site_sf, provider = "Esri.WorldImagery", zoom = 18)
 
-# Clip habitat layer and boundary to satellite basemap extent
+# Clip habitat layer and boundary lines to satellite basemap extent
 ncos_habitats <- st_crop(ncos_habitats, st_bbox(map_basemap))
-ncos_boundary <- st_crop(ncos_boundary, st_bbox(map_basemap))
+ncos_boundary_lines <- st_crop(ncos_boundary_lines, st_bbox(map_basemap))
 
 # Convert raster to data.frame for ggplot
 map_rgb_df <- as.data.frame(map_basemap, xy = TRUE)
@@ -1207,7 +1208,7 @@ feature_colors <- c(
 habitat_colors <- c(
   "Grassland" = "#9ACD32",
   "Marsh" = "#2E8B57",
-  "Scrub" = "#8B7355"
+  "Scrub" = "#9370DB"
 )
 
 # Filter out "Other" habitat type
@@ -1218,8 +1219,8 @@ map_main <- ggplot() +
   geom_raster(data = map_rgb_df, aes(x = x, y = y, fill = hex)) +
   scale_fill_identity() +
   # Add NCOS boundary (yellow outline, no fill)
-  geom_sf(data = ncos_boundary |> mutate(boundary = "NCOS Boundary"),
-          aes(linetype = boundary), fill = NA, color = "yellow", linewidth = 1) +
+  geom_sf(data = ncos_boundary_lines |> mutate(boundary = "NCOS Boundary"),
+          aes(linetype = boundary), color = "yellow", linewidth = 1) +
   scale_linetype_manual(values = "solid", name = NULL) +
   # Add habitat polygons (semi-transparent overlay on satellite)
   ggnewscale::new_scale_fill() +
@@ -1232,7 +1233,8 @@ map_main <- ggplot() +
   scale_fill_manual(values = feature_colors, name = "Feature Type") +
   scale_size(name = "Avg. Daily Obs.", range = c(2, 6)) +
   coord_sf(xlim = c(bbox_expanded["xmin"], bbox_expanded["xmax"]),
-           ylim = c(bbox_expanded["ymin"], bbox_expanded["ymax"])) +
+           ylim = c(bbox_expanded["ymin"], bbox_expanded["ymax"]),
+           clip = "on") +
   annotation_scale(
     location = "bl",      # bottom left
     pad_x = unit(0.45, "in"),
@@ -1292,12 +1294,176 @@ map_overview <- ggplot() +
 # Combine maps with proper positioning
 map_final <- ggdraw() +
   draw_plot(map_main) +
-  draw_plot(map_overview, x = 0.69, y = 0.646, width = 0.3, height = 0.3)
+  draw_plot(map_overview, x = 0.68, y = 0.647, width = 0.3, height = 0.3)
 
 map_final
 
 ggsave(here("figures","deployment_map_pt_2.png"), plot = map_final, width = 10, height = 6, dpi = 300, bg = "white")
 ```
+### Map v 2
+```{r fig-deployment-map-2}
+#| label: fig-deployment-map-2
+#| fig-cap: "**Spatial distribution of camera trap deployments at the study site.** Circle color indicates feature type and size reflects the average daily number of wildlife observations. Inset map shows the location within California."
+#| fig-width: 10
+#| fig-height: 6
+
+# Convert site_summary to sf object
+map_site_sf <- st_as_sf(placename_summary_pt_2, coords = c("longitude", "latitude"), crs = 4326)
+
+# Load NCOS habitat layer from local shapefile
+ncos_habitats <- st_read(here("data", "ncos_habitats_june_2021", "NCOS_Habitats_June2021_Simple.shp"))
+
+# Fix invalid geometries and transform to match CRS
+ncos_habitats <- st_make_valid(ncos_habitats)
+ncos_habitats <- st_transform(ncos_habitats, crs = st_crs(map_site_sf))
+
+# Simplify habitat categories and dissolve by group
+ncos_habitats <- ncos_habitats |>
+  mutate(habitat_simple = case_when(
+    str_detect(Habitat, "Grassland") ~ "Grassland",
+    Habitat == "Upland Mosaic" ~ "Grassland",
+    str_detect(Habitat, "Marsh|marsh") ~ "Marsh",
+    str_detect(Habitat, "Scrub") ~ "Scrub",
+    Habitat == "Oak Woodland/Chaparral" ~ "Scrub",
+    TRUE ~ "Other"
+  )) |>
+  group_by(habitat_simple) |>
+  summarise(geometry = st_union(geometry), .groups = "drop")
+
+# Load NCOS boundary and convert to lines (so clipping doesn't create false polygon edges)
+ncos_boundary <- st_read(here("data", "ncos_shp", "ncos_shp.shp"))
+ncos_boundary <- st_make_valid(ncos_boundary)
+ncos_boundary <- st_transform(ncos_boundary, crs = st_crs(map_site_sf))
+ncos_boundary_lines <- st_cast(ncos_boundary, "MULTILINESTRING")
+
+# Get bounding box and expand slightly
+bbox <- st_bbox(map_site_sf)
+padding <- 0.01  # Reduced padding for tighter view
+west_shift <- 0.0  # Adjust this value to shift more/less west
+bbox_expanded <- c(
+  xmin = bbox["xmin"] - padding - west_shift,
+  xmax = bbox["xmax"] + padding - west_shift,
+  ymin = bbox["ymin"] - padding,
+  ymax = bbox["ymax"] + padding
+)
+
+# Download satellite tiles (Esri)
+map_basemap <- get_tiles(map_site_sf, provider = "Esri.WorldImagery", zoom = 18)
+
+# Clip habitat layer and boundary lines to satellite basemap extent
+ncos_habitats <- st_crop(ncos_habitats, st_bbox(map_basemap))
+ncos_boundary_lines <- st_crop(ncos_boundary_lines, st_bbox(map_basemap))
+
+# Convert raster to data.frame for ggplot
+map_rgb_df <- as.data.frame(map_basemap, xy = TRUE)
+colnames(map_rgb_df) <- c("x", "y", "red", "green", "blue")
+map_rgb_df$hex <- rgb(map_rgb_df$red, map_rgb_df$green, map_rgb_df$blue, maxColorValue = 255)
+
+# Set feature type colors
+feature_colors <- c(
+  "Boulder" = brewer.pal(3, "Set2")[1],
+  "Constructed Hibernacula" = brewer.pal(3, "Set2")[2],
+  "Log" = brewer.pal(3, "Set2")[3]
+)
+
+# Define simplified habitat colors (excluding "Other")
+habitat_colors <- c(
+  "Grassland" = "#9ACD32",
+  "Marsh" = "#2E8B57",
+  "Scrub" = "#9370DB"
+)
+
+# Filter out "Other" habitat type
+ncos_habitats_filtered <- ncos_habitats |> filter(habitat_simple != "Other")
+
+# Main satellite deployment map with habitat layer
+map_main <- ggplot() +
+  geom_raster(data = map_rgb_df, aes(x = x, y = y, fill = hex)) +
+  scale_fill_identity() +
+  # Add NCOS boundary (yellow outline, no fill)
+  geom_sf(data = ncos_boundary_lines |> mutate(boundary = "NCOS Boundary"),
+          aes(linetype = boundary), color = "yellow", linewidth = 1) +
+  scale_linetype_manual(values = "solid", name = NULL) +
+  # Add habitat polygons (semi-transparent overlay on satellite)
+  ggnewscale::new_scale_fill() +
+  geom_sf(data = ncos_habitats_filtered, aes(fill = habitat_simple), color = "white", linewidth = 0.3, alpha = 0.5) +
+  scale_fill_manual(values = habitat_colors, name = "Habitat Type") +
+  # Add camera deployment points
+  ggnewscale::new_scale_fill() +
+  geom_sf(data = map_site_sf, aes(fill = feature_type_methodology, size = detections_per_camera_day),
+          shape = 21, color = "black", stroke = 0.8, alpha = 0.9) +
+  scale_fill_manual(values = feature_colors, name = "Feature Type") +
+  scale_size(name = "Avg. Daily Obs.", range = c(2, 6)) +
+  coord_sf(xlim = c(bbox_expanded["xmin"], bbox_expanded["xmax"]),
+           ylim = c(bbox_expanded["ymin"], bbox_expanded["ymax"]),
+           clip = "on") +
+  annotation_scale(
+    location = "bl",      # bottom left
+    pad_x = unit(0.45, "in"),
+    pad_y = unit(0.3, "in"),
+    width_hint = 0.25,
+    text_col = "white"   # White text
+  ) +
+  annotation_north_arrow(
+    location = "br",      # bottom right
+    which_north = "true",
+    pad_x = unit(0.35, "in"),
+    pad_y = unit(0.23, "in"),
+    style = north_arrow_fancy_orienteering
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    panel.grid = element_blank(),
+    legend.position = "bottom",
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    legend.box = "vertical",
+    legend.box.spacing = unit(0, "cm"),
+    legend.spacing.y = unit(0, "cm"),
+    legend.margin = margin(t = 0, b = 0),
+    legend.title = element_text(size = 10),
+    legend.text = element_text(size = 9),
+    legend.key.height = unit(0.4, "cm")
+  ) +
+  guides(
+    linetype = guide_legend(order = 1, override.aes = list(color = "yellow", linewidth = 1)),
+    fill = guide_legend(order = 2, nrow = 1, override.aes = list(alpha = 0.9, size = 4, shape = 21, stroke = 0.8)),
+    size = guide_legend(order = 3, nrow = 1, override.aes = list(fill = "black", shape = 21, stroke = 0.8))
+  )
+
+# Calculate study area centroid
+map_centroid_coords <- map_site_sf %>%
+  st_coordinates() %>%
+  as.data.frame() %>%
+  summarise(longitude = mean(X), latitude = mean(Y))
+
+# Overview map of CA with study area location
+map_CA <- map("state", plot = FALSE, fill = TRUE) %>%
+  st_as_sf() %>%
+  filter(ID == "california")
+
+map_overview <- ggplot() +
+  geom_sf(data = map_CA, fill = "gray90", color = "gray60", size = 0.3) +
+  geom_point(data = map_centroid_coords, aes(x = longitude, y = latitude), 
+             color = "red", size = 3, shape = 15) +
+  theme_void() +
+  theme(
+    panel.border = element_rect(color = "black", fill = NA, size = 0.5),
+    plot.background = element_rect(fill = "white", color = NA)
+  )
+
+# Combine maps with proper positioning
+map_final <- ggdraw() +
+  draw_plot(map_main) +
+  draw_plot(map_overview, x = 0.68, y = 0.647, width = 0.3, height = 0.3)
+
+map_final
+
+ggsave(here("figures","deployment_map_pt_2.png"), plot = map_final, width = 10, height = 6, dpi = 300, bg = "white")
+
+```
+
 
 # Part 1:
 
@@ -1676,27 +1842,68 @@ bbox_sf <- st_as_sfc(bbox_expanded)
 # Download satellite tiles using expanded bbox
 map_basemap <- get_tiles(bbox_sf, provider = "Esri.WorldImagery", zoom = 18)
 
+# Load and process habitat layer
+ncos_habitats <- st_read(here("data", "ncos_habitats_june_2021", "NCOS_Habitats_June2021_Simple.shp"))
+ncos_habitats <- st_make_valid(ncos_habitats)
+ncos_habitats <- st_transform(ncos_habitats, crs = 4326)
+
+# Simplify habitat categories and dissolve by group
+ncos_habitats <- ncos_habitats |>
+  mutate(habitat_simple = case_when(
+    str_detect(Habitat, "Grassland") ~ "Grassland",
+    Habitat == "Upland Mosaic" ~ "Grassland",
+    str_detect(Habitat, "Marsh|marsh") ~ "Marsh",
+    str_detect(Habitat, "Scrub") ~ "Scrub",
+    Habitat == "Oak Woodland/Chaparral" ~ "Scrub",
+    TRUE ~ "Other"
+  )) |>
+  group_by(habitat_simple) |>
+  summarise(geometry = st_union(geometry), .groups = "drop")
+
+# Clip habitat layer to NCOS boundary
+ncos_habitats <- st_intersection(ncos_habitats, open_space_boundary)
+
+# Filter out "Other" habitat type
+ncos_habitats_filtered <- ncos_habitats |> filter(habitat_simple != "Other")
+
+# Define simplified habitat colors
+habitat_colors <- c(
+  "Grassland" = "#9ACD32",
+  "Marsh" = "#2E8B57",
+  "Scrub" = "#9370DB"
+)
+
 # Convert raster to data.frame for ggplot
 map_rgb_df <- as.data.frame(map_basemap, xy = TRUE)
 colnames(map_rgb_df) <- c("x", "y", "red", "green", "blue")
 map_rgb_df$hex <- rgb(map_rgb_df$red, map_rgb_df$green, map_rgb_df$blue, maxColorValue = 255)
 
   # Define shapes for study parts
-  study_part_shapes <- c("1" = 16, "2" = 17, "both" = 15)
+  study_part_shapes <- c("1" = 21, "2" = 24, "both" = 22)
 
   # Main satellite deployment map - now fits the full open space boundary
 map_main <- ggplot() +
   geom_raster(data = map_rgb_df, aes(x = x, y = y, fill = hex)) +
   scale_fill_identity() +
-  
+
+
+
+  # Add habitat polygons (semi-transparent overlay on satellite)
+  ggnewscale::new_scale_fill() +
+  geom_sf(data = ncos_habitats_filtered, aes(fill = habitat_simple), color = "white", linewidth = 0.3, alpha = 0.5) +
+  scale_fill_manual(values = habitat_colors, name = "Habitat Type") +
+
+  # Add NCOS boundary
   geom_sf(data = open_space_boundary, aes(linetype = "NCOS Boundary"),
           color = "yellow", fill = NA, linewidth = 2) +
-  
-  geom_sf(data = map_site_sf, aes(color = feature_type_methodology, shape = study_part_combined),
-          size = 4, alpha = 0.9, stroke = 0.5) +
-  
+
+  # Add deployment points on top
+  ggnewscale::new_scale_fill() +
+  geom_sf(data = map_site_sf, aes(fill = feature_type_methodology, shape = study_part_combined),
+          color = "black", size = 4, alpha = 0.9, stroke = 0.8) +
+
   # Scales
-  scale_color_manual(values = feature_colors, name = "Feature Type") +
+  scale_fill_manual(values = feature_colors, name = "Feature Type") +
   scale_shape_manual(
     name = "Study Part",
     values = study_part_shapes,
@@ -1719,20 +1926,22 @@ map_main <- ggplot() +
   panel.grid = element_blank(),
   legend.position = "bottom",
   legend.box = "horizontal",
-  legend.box.just = "center",   # <-- centers all legends vertically
-  legend.box.margin = margin(t = 0, r = 0, b = 0, l = 0),  # optional, remove extra padding
+  legend.box.just = "center",
+  legend.box.margin = margin(t = 0, r = 0, b = 0, l = 0),
   axis.title = element_blank(),
   axis.text = element_blank(),
   axis.ticks = element_blank(),
-  legend.title = element_text(size = 16, face = "bold"),
-  legend.text = element_text(size = 14)
+  legend.title = element_text(size = 12, face = "bold"),
+  legend.text = element_text(size = 10),
+  legend.spacing.x = unit(0.5, "cm"),
+  legend.direction = "vertical"
 ) +
-  
-  # Force legend order: NCOS Boundary first
+
+  # Force legend order with vertical stacking within each legend
   guides(
-       linetype = guide_legend(order = 1, override.aes = list(color = "yellow", linewidth = 2), ncol = 1),
-    color = guide_legend(order = 2, override.aes = list(size = 4), ncol = 1),
-    shape = guide_legend(order = 3, override.aes = list(size = 4), ncol = 1)
+    linetype = guide_legend(order = 1, override.aes = list(color = "yellow", linewidth = 2)),
+    fill = guide_legend(order = 2, override.aes = list(alpha = 0.9, shape = 21, color = "black", stroke = 0.8, size = 4)),
+    shape = guide_legend(order = 3, override.aes = list(size = 4, fill = "black", color = "black", stroke = 0.8))
   )
 
 # Calculate study area centroid
@@ -1759,7 +1968,7 @@ map_overview <- ggplot() +
 # Combine maps with proper positioning
 map_final <- ggdraw() +
   draw_plot(map_main) +
-  draw_plot(map_overview, x = 0.72, y = 0.622, width = 0.3, height = 0.3)
+  draw_plot(map_overview, x = 0.685, y = 0.652, width = 0.3, height = 0.3)
 
 map_final
 
