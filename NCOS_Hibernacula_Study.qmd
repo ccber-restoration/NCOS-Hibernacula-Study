@@ -1224,7 +1224,7 @@ map_main <- ggplot() +
   scale_linetype_manual(values = "solid", name = NULL) +
   # Add habitat polygons (semi-transparent overlay on satellite)
   ggnewscale::new_scale_fill() +
-  geom_sf(data = ncos_habitats_filtered, aes(fill = habitat_simple), color = "white", linewidth = 0.3, alpha = 0.5) +
+  geom_sf(data = ncos_habitats_filtered, aes(fill = habitat_simple), color = NA, alpha = 0.5) +
   scale_fill_manual(values = habitat_colors, name = "Habitat Type") +
   # Add camera deployment points
   ggnewscale::new_scale_fill() +
@@ -1386,7 +1386,7 @@ map_main <- ggplot() +
   scale_linetype_manual(values = "solid", name = NULL) +
   # Add habitat polygons (semi-transparent overlay on satellite)
   ggnewscale::new_scale_fill() +
-  geom_sf(data = ncos_habitats_filtered, aes(fill = habitat_simple), color = "white", linewidth = 0.3, alpha = 0.5) +
+  geom_sf(data = ncos_habitats_filtered, aes(fill = habitat_simple), color = NA, alpha = 0.5) +
   scale_fill_manual(values = habitat_colors, name = "Habitat Type") +
   # Add camera deployment points
   ggnewscale::new_scale_fill() +
@@ -1838,7 +1838,6 @@ bbox_expanded <- bbox_expanded + c(-buffer_val, -buffer_val, buffer_val, buffer_
 # Convert to sf polygon for tile download
 bbox_sf <- st_as_sfc(bbox_expanded)
 
-
 # Download satellite tiles using expanded bbox
 map_basemap <- get_tiles(bbox_sf, provider = "Esri.WorldImagery", zoom = 18)
 
@@ -1886,12 +1885,12 @@ map_main <- ggplot() +
   geom_raster(data = map_rgb_df, aes(x = x, y = y, fill = hex)) +
   scale_fill_identity() +
 
-
-
   # Add habitat polygons (semi-transparent overlay on satellite)
   ggnewscale::new_scale_fill() +
-  geom_sf(data = ncos_habitats_filtered, aes(fill = habitat_simple), color = "white", linewidth = 0.3, alpha = 0.5) +
-  scale_fill_manual(values = habitat_colors, name = "Habitat Type") +
+  geom_sf(data = ncos_habitats_filtered, aes(fill = habitat_simple), color = NA, alpha = 0.5) +
+  scale_fill_manual(values = habitat_colors, name = "Habitat Type",
+                  guide = guide_legend(order = 1)) +  # Add this
+  
 
   # Add NCOS boundary
   geom_sf(data = open_space_boundary, aes(linetype = "NCOS Boundary"),
@@ -1914,35 +1913,40 @@ map_main <- ggplot() +
     values = c("NCOS Boundary" = "solid")
   ) +
   
-  coord_sf(expand = TRUE) +
+coord_sf(expand = TRUE) +
   annotation_scale(location = "bl", pad_x = unit(0.45, "in"), pad_y = unit(0.3, "in"),
                    width_hint = 0.25, text_col = "white") +
-  annotation_north_arrow(location = "br", which_north = "true",
-                         pad_x = unit(0.35, "in"), pad_y = unit(0.23, "in"),
-                         style = north_arrow_fancy_orienteering) +
+  annotation_north_arrow(location = "tr", which_north = "true",
+                         pad_x = unit(0.40, "in"), pad_y = unit(0.35, "in"),
+                         style = north_arrow_fancy_orienteering(
+                           fill = c("white", "white"),
+                           line_col = "white", 
+                           text_col = "white"
+                         )) +
   
   theme_minimal(base_size = 12) +
-  theme(
+theme(
   panel.grid = element_blank(),
   legend.position = "bottom",
   legend.box = "horizontal",
   legend.box.just = "center",
-  legend.box.margin = margin(t = 0, r = 0, b = 0, l = 0),
+  legend.box.margin = margin(t = -20, r = 0, b = 0, l = 0),  # Negative top margin pulls legend closer
+  plot.margin = margin(t = 5, r = 5, b = 5, l = 5),  # Reduce overall plot margins
   axis.title = element_blank(),
   axis.text = element_blank(),
   axis.ticks = element_blank(),
-  legend.title = element_text(size = 12, face = "bold"),
-  legend.text = element_text(size = 10),
+  legend.title = element_text(size = 14, face = "bold"),
+  legend.text = element_text(size = 12),
   legend.spacing.x = unit(0.5, "cm"),
   legend.direction = "vertical"
 ) +
 
-  # Force legend order with vertical stacking within each legend
-  guides(
-    linetype = guide_legend(order = 1, override.aes = list(color = "yellow", linewidth = 2)),
-    fill = guide_legend(order = 2, override.aes = list(alpha = 0.9, shape = 21, color = "black", stroke = 0.8, size = 4)),
-    shape = guide_legend(order = 3, override.aes = list(size = 4, fill = "black", color = "black", stroke = 0.8))
-  )
+# Force legend order with vertical stacking within each legend
+guides(
+  fill = guide_legend(order = 2, override.aes = list(alpha = 0.9, shape = 21, color = "black", stroke = 0.8, size = 4)),
+  shape = guide_legend(order = 3, override.aes = list(size = 4, fill = "black", color = "black", stroke = 0.8)),
+  linetype = guide_legend(order = 4, override.aes = list(color = "yellow", linewidth = 2))
+)
 
 # Calculate study area centroid
 map_centroid_coords <- map_site_sf %>%
@@ -1968,7 +1972,7 @@ map_overview <- ggplot() +
 # Combine maps with proper positioning
 map_final <- ggdraw() +
   draw_plot(map_main) +
-  draw_plot(map_overview, x = 0.685, y = 0.652, width = 0.3, height = 0.3)
+  draw_plot(map_overview, x = 0.69, y = .25 , width = 0.3, height = 0.3)
 
 map_final
 
